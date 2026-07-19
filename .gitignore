@@ -1,0 +1,6 @@
+# Supabase CLI local cache (project link metadata, per-machine)
+supabase/.temp/
+supabase/.branches/
+
+# macOS
+.DS_Store
