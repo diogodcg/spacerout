@@ -49,25 +49,32 @@ linkado — `supabase db push` aplica migrations pendentes direto.
   com `signInWithGoogle`/`signInWithApple` (troca idToken por sessão do
   Supabase via `signInWithIdToken`), `LoginScreen`, e `main.dart` já roteia
   entre login e app autenticado conforme a sessão. `flutter analyze` limpo.
-  **Não funcional ainda** — falta toda a configuração externa (ver checklist
-  abaixo), que só quem tem acesso às contas Google/Apple/Supabase consegue
-  fazer
+- **Login com Google testado e funcionando ponta a ponta** (simulador iOS):
+  clients Web/Android/iOS criados no Google Cloud Console, `webClientId` em
+  `app/lib/core/google_auth_config.dart`, `GIDClientID` +
+  `REVERSED_CLIENT_ID` no `Info.plist` (iOS), SHA-1 de debug registrado
+  (Android), provider Google habilitado no Supabase Dashboard com os Client
+  IDs Web *e* iOS na lista (o idToken do iOS usa o client iOS como
+  audience, não o Web). `AuthRepository` gera um nonce próprio (hash
+  SHA-256 pro Google em `initialize()`, valor cru pro
+  `signInWithIdToken()`) — o Supabase rejeita o token se o nonce não
+  bater. Sessão autenticada confirmada com conta real.
 
 ### 🚧 Em aberto
 
-- [ ] **Configuração externa do login social** (bloqueia testar o login,
-      código já pronto):
-  - [ ] Google Cloud Console: criar OAuth client "Web" (cola o ID em
-        `app/lib/core/google_auth_config.dart` → `webClientId`) e um client
-        "iOS" (bundle id `com.spacerout.spacerout`) para o
-        `REVERSED_CLIENT_ID` no `Info.plist`
-  - [ ] Android: registrar o SHA-1 de assinatura do app no client Google
-        correspondente (applicationId `com.spacerout.spacerout`)
+- [ ] **Sign in with Apple**: adiado — precisa de conta paga no Apple
+      Developer Program, que o usuário ainda não tem. O botão de Apple já
+      existe na `LoginScreen` (só aparece em iOS/macOS) mas vai dar erro se
+      tocado antes da capability estar configurada. Retomar quando a conta
+      sair:
   - [ ] Apple Developer: habilitar capability "Sign in with Apple" no App ID
         e no projeto Xcode (Signing & Capabilities), gera o entitlements
         automaticamente
-  - [ ] Supabase Dashboard → Authentication → Providers: habilitar Google e
-        Apple, colando os Client IDs criados acima
+  - [ ] Supabase Dashboard → Authentication → Providers: habilitar Apple,
+        colando o Client ID/Service ID criado
+  - [ ] Antes de submeter à App Store: obrigatório por regra da Apple
+        sempre que Google Sign-In é oferecido em iOS (ver
+        PLANO_MIGRACAO.md §5) — não bloqueia desenvolvimento, só submissão
 - [ ] **Push notifications (infra)**: job `pg_cron` + Edge Function que
       dispara via FCM quando `notificar_as` vence. Schema já pronto; falta
       deploy da Edge Function (Deno) + credenciais de service account do
