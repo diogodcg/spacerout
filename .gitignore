@@ -4,3 +4,6 @@ supabase/.branches/
 
 # macOS
 .DS_Store
+
+# Xcode - Swift Package Manager workspace state (auto-generated, per-machine)
+**/xcshareddata/swiftpm/
