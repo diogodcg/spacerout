@@ -211,6 +211,31 @@ linkado — `supabase db push` aplica migrations pendentes direto.
   recebido com sucesso; falta verificar um domínio antes de mandar pra
   convidados de verdade. **Sem link de download** no e-mail por enquanto
   (app não publicado) — só a instrução de pedir o app pra quem convidou.
+- **Design System "Starlight" v1.0** (`app/lib/core/ui/`): tokens de cor
+  (`tokens/app_colors.dart`), geometria/espaçamento/sombra
+  (`tokens/app_specs.dart`) e tipografia (`tokens/app_typography.dart` —
+  par Space Grotesk pros elementos de "painel de comando"
+  (headers/títulos/botões) + Plus Jakarta Sans pro corpo de texto + Space
+  Mono no contador de moedas, algarismos de largura fixa); componentes
+  `PrimarySpaceButton`, `CoinBadge` e `MissionCard`
+  (`components/`); tema global `AppTheme.spaceRoutTheme`
+  (`theme/app_theme.dart`) ligado no `MaterialApp` — cobre não só os
+  componentes novos mas os widgets Material que as telas já usam
+  (`TextFormField`, `Checkbox`, `Drawer`, `AlertDialog`, `SnackBar`), pra
+  não ficar metade do app "Starlight" e metade Material default. Dark
+  first, cantos arredondados (radius 8/16/24), Calm Technology (sem
+  animação exagerada). Ajustes feitos em cima da primeira proposta: 4º
+  status (`rejeitada`) no `MissionCard`, reforçado por ícone + rótulo além
+  da cor (aprovada/rejeitada em verde/vermelho pastel seriam
+  indistinguíveis pra daltonismo só por cor); único momento animado do
+  sistema é o "twinkle" (escala + glow) do `CoinBadge` quando o saldo
+  sobe — respeita "reduzir movimento" do sistema, resto do app sem
+  animação. Testado no simulador iOS (precisou subir
+  `IPHONEOS_DEPLOYMENT_TARGET` de 13.0 pra 15.0 no Xcode — exigência do
+  Firebase, nunca tinha sido testado no simulador iOS antes). Aplicado só
+  no tema global por enquanto — telas ainda não trocaram seus widgets ad
+  hoc pelos componentes novos (`MissionCard` etc.), fica pro próximo
+  passo.
 
 ### 🚧 Em aberto
 
@@ -252,6 +277,10 @@ linkado — `supabase db push` aplica migrations pendentes direto.
   - [x] Fluxo de convite (responsável convida, aceite automático no login)
 - [ ] **Assinatura**: integração RevenueCat + Edge Function que atualiza
       `organizacoes_familiares.plano`/`plano_expira_em`
+- [ ] **Aplicar o Design System "Starlight" nas telas**: hoje só o tema
+      global está ligado (`AppTheme.spaceRoutTheme`) — as telas
+      existentes ainda usam seus próprios widgets ad hoc, não os
+      componentes novos (`MissionCard`, `CoinBadge`, `PrimarySpaceButton`)
 
 ## Estrutura do repo
 
@@ -267,6 +296,7 @@ spacerout/
   app/                 # projeto Flutter
     lib/
       core/            # client Supabase, config
+        ui/            # Design System "Starlight" (tokens, componentes, tema)
       features/
         auth/          # login social (Google/Apple)
         organizacao/   # onboarding de organização nova, multi-select de astronautas

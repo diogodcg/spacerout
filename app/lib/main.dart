@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'core/supabase_config.dart';
+import 'core/ui/theme/app_theme.dart';
 import 'features/auth/data/auth_providers.dart';
 import 'features/auth/presentation/login_screen.dart';
 import 'features/convites/presentation/convites_screen.dart';
@@ -45,7 +46,7 @@ class SpaceRoutApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'SpaceRout',
-      theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple)),
+      theme: AppTheme.spaceRoutTheme,
       home: const _AuthGate(),
     );
   }
