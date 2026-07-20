@@ -136,69 +136,76 @@ class _PainelResponsavelState extends ConsumerState<_PainelResponsavel> {
             ),
           ],
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () => ref.read(authRepositoryProvider).signOut(),
-          ),
-        ],
       ),
       drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
+        child: Column(
           children: [
-            DrawerHeader(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.zero,
                 children: [
-                  const Text(
-                    'Comando da Missão',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 12),
-                  DropdownButtonFormField<String?>(
-                    // DropdownButtonFormField.initialValue só é lido na
-                    // primeira montagem — sem essa key, o campo "gruda" no
-                    // valor inicial e não acompanha mudanças externas em
-                    // criancaSelecionadaProvider (ex.: trocar via lista, se
-                    // existisse, não refletiria aqui). A key força recriar o
-                    // FormField sempre que a seleção mudar por fora.
-                    key: ValueKey(criancaId),
-                    initialValue: criancaId,
-                    isExpanded: true,
-                    decoration: const InputDecoration(
-                      labelText: 'Vendo',
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                    ),
-                    items: [
-                      const DropdownMenuItem(value: null, child: Text('Visão geral')),
-                      for (final astronauta in astronautas)
-                        DropdownMenuItem(
-                          value: astronauta['id'] as String,
-                          child: Text(
-                            '${astronauta['nome_exibicao']} · ${astronauta['saldo_moedas']} moedas',
-                          ),
+                  DrawerHeader(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        const Text(
+                          'Comando da Missão',
+                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                         ),
-                    ],
-                    onChanged: (value) =>
-                        ref.read(criancaSelecionadaProvider.notifier).state = value,
+                        const SizedBox(height: 12),
+                        DropdownButtonFormField<String?>(
+                          // DropdownButtonFormField.initialValue só é lido na
+                          // primeira montagem — sem essa key, o campo "gruda"
+                          // no valor inicial e não acompanha mudanças
+                          // externas em criancaSelecionadaProvider. A key
+                          // força recriar o FormField sempre que a seleção
+                          // mudar por fora.
+                          key: ValueKey(criancaId),
+                          initialValue: criancaId,
+                          isExpanded: true,
+                          decoration: const InputDecoration(
+                            labelText: 'Vendo',
+                            border: OutlineInputBorder(),
+                            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                          ),
+                          items: [
+                            const DropdownMenuItem(value: null, child: Text('Visão geral')),
+                            for (final astronauta in astronautas)
+                              DropdownMenuItem(
+                                value: astronauta['id'] as String,
+                                child: Text(
+                                  '${astronauta['nome_exibicao']} · ${astronauta['saldo_moedas']} moedas',
+                                ),
+                              ),
+                          ],
+                          onChanged: (value) =>
+                              ref.read(criancaSelecionadaProvider.notifier).state = value,
+                        ),
+                      ],
+                    ),
                   ),
+                  const Divider(),
+                  for (var i = 0; i < _painelResponsavelItens.length; i++)
+                    ListTile(
+                      leading: Icon(_painelResponsavelItens[i].icone),
+                      title: Text(_painelResponsavelItens[i].titulo),
+                      selected: i == _indice,
+                      onTap: () {
+                        setState(() => _indice = i);
+                        Navigator.of(context).pop();
+                      },
+                    ),
                 ],
               ),
             ),
-            const Divider(),
-            for (var i = 0; i < _painelResponsavelItens.length; i++)
-              ListTile(
-                leading: Icon(_painelResponsavelItens[i].icone),
-                title: Text(_painelResponsavelItens[i].titulo),
-                selected: i == _indice,
-                onTap: () {
-                  setState(() => _indice = i);
-                  Navigator.of(context).pop();
-                },
-              ),
+            const Divider(height: 1),
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: const Text('Sair'),
+              onTap: () => ref.read(authRepositoryProvider).signOut(),
+            ),
+            const SizedBox(height: 8),
           ],
         ),
       ),
@@ -228,36 +235,43 @@ class _DrawerShellState extends ConsumerState<_DrawerShell> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.itens[_indice].titulo),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () => ref.read(authRepositoryProvider).signOut(),
-          ),
-        ],
       ),
       drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
+        child: Column(
           children: [
-            DrawerHeader(
-              child: Align(
-                alignment: Alignment.bottomLeft,
-                child: Text(
-                  widget.headerTitulo,
-                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: [
+                  DrawerHeader(
+                    child: Align(
+                      alignment: Alignment.bottomLeft,
+                      child: Text(
+                        widget.headerTitulo,
+                        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  for (var i = 0; i < widget.itens.length; i++)
+                    ListTile(
+                      leading: Icon(widget.itens[i].icone),
+                      title: Text(widget.itens[i].titulo),
+                      selected: i == _indice,
+                      onTap: () {
+                        setState(() => _indice = i);
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                ],
               ),
             ),
-            for (var i = 0; i < widget.itens.length; i++)
-              ListTile(
-                leading: Icon(widget.itens[i].icone),
-                title: Text(widget.itens[i].titulo),
-                selected: i == _indice,
-                onTap: () {
-                  setState(() => _indice = i);
-                  Navigator.of(context).pop();
-                },
-              ),
+            const Divider(height: 1),
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: const Text('Sair'),
+              onTap: () => ref.read(authRepositoryProvider).signOut(),
+            ),
+            const SizedBox(height: 8),
           ],
         ),
       ),

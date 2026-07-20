@@ -151,6 +151,9 @@ linkado — `supabase db push` aplica migrations pendentes direto.
   responsável) / "Status dos Suprimentos" (era "Meus Pedidos" — evita a
   palavra "aprovado", já que resgate não tem etapa de aprovação, só
   confirmação de entrega).
+- **Logout movido pro rodapé do Drawer** (nos dois painéis): antes era um
+  ícone solto na AppBar, agora é um item "Sair" fixo embaixo da lista de
+  seções, separado por divisor — padrão mais comum pra ação de sair.
 
 ### 🚧 Em aberto
 
