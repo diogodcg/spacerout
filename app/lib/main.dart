@@ -96,8 +96,8 @@ const _painelResponsavelItens = [
 /// suprimentos e histórico dos próprios pedidos.
 const _painelAstronautaItens = [
   _PainelItem('Missões', Icons.rocket_launch, MissoesAstronautaScreen()),
-  _PainelItem('Loja', Icons.storefront, LojaAstronautaScreen()),
-  _PainelItem('Meus Pedidos', Icons.shopping_bag, MeusPedidosScreen()),
+  _PainelItem('Suprimentos', Icons.storefront, LojaAstronautaScreen()),
+  _PainelItem('Status dos Suprimentos', Icons.shopping_bag, MeusPedidosScreen()),
 ];
 
 /// Shell do painel do responsável: além dos 4 itens de navegação, o Drawer

@@ -147,6 +147,10 @@ linkado — `supabase db push` aplica migrations pendentes direto.
 - **Nomenclatura temática do painel do astronauta**: "Painel de Voo" (era
   "SpaceRout" genérico) — ecoa `coordenadas_voo`, contrasta com "Comando da
   Missão" do responsável (ele comanda de fora, a criança pilota de dentro).
+  Seções: "Missões" / "Suprimentos" (era "Loja" — alinhado com o nome do
+  responsável) / "Status dos Suprimentos" (era "Meus Pedidos" — evita a
+  palavra "aprovado", já que resgate não tem etapa de aprovação, só
+  confirmação de entrega).
 
 ### 🚧 Em aberto
 
