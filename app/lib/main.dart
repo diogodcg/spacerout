@@ -63,7 +63,7 @@ class _AuthGate extends ConsumerWidget {
         return usuario['role'] == 'responsavel'
             ? const _PainelResponsavel()
             : const _DrawerShell(
-                headerTitulo: 'SpaceRout',
+                headerTitulo: 'Painel de Voo',
                 itens: _painelAstronautaItens,
               );
       },
@@ -123,9 +123,19 @@ class _PainelResponsavelState extends ConsumerState<_PainelResponsavel> {
 
     return Scaffold(
       appBar: AppBar(
-        title: criancaAtual != null
-            ? Text('${criancaAtual['nome_exibicao']} · ${criancaAtual['saldo_moedas']} moedas')
-            : Text(_painelResponsavelItens[_indice].titulo),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(_painelResponsavelItens[_indice].titulo),
+            Text(
+              criancaAtual != null
+                  ? '${criancaAtual['nome_exibicao']} · ${criancaAtual['saldo_moedas']} moedas'
+                  : 'Visão geral',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ],
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
@@ -137,36 +147,47 @@ class _PainelResponsavelState extends ConsumerState<_PainelResponsavel> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            const DrawerHeader(
-              child: Align(
-                alignment: Alignment.bottomLeft,
-                child: Text(
-                  'Comando da Missão',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
+            DrawerHeader(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  const Text(
+                    'Comando da Missão',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 12),
+                  DropdownButtonFormField<String?>(
+                    // DropdownButtonFormField.initialValue só é lido na
+                    // primeira montagem — sem essa key, o campo "gruda" no
+                    // valor inicial e não acompanha mudanças externas em
+                    // criancaSelecionadaProvider (ex.: trocar via lista, se
+                    // existisse, não refletiria aqui). A key força recriar o
+                    // FormField sempre que a seleção mudar por fora.
+                    key: ValueKey(criancaId),
+                    initialValue: criancaId,
+                    isExpanded: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Vendo',
+                      border: OutlineInputBorder(),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    ),
+                    items: [
+                      const DropdownMenuItem(value: null, child: Text('Visão geral')),
+                      for (final astronauta in astronautas)
+                        DropdownMenuItem(
+                          value: astronauta['id'] as String,
+                          child: Text(
+                            '${astronauta['nome_exibicao']} · ${astronauta['saldo_moedas']} moedas',
+                          ),
+                        ),
+                    ],
+                    onChanged: (value) =>
+                        ref.read(criancaSelecionadaProvider.notifier).state = value,
+                  ),
+                ],
               ),
             ),
-            ListTile(
-              leading: const Icon(Icons.groups),
-              title: const Text('Visão geral'),
-              selected: criancaId == null,
-              onTap: () {
-                ref.read(criancaSelecionadaProvider.notifier).state = null;
-                Navigator.of(context).pop();
-              },
-            ),
-            for (final astronauta in astronautas)
-              ListTile(
-                leading: const Icon(Icons.face),
-                title: Text(astronauta['nome_exibicao'] as String),
-                subtitle: Text('${astronauta['saldo_moedas']} moedas'),
-                selected: astronauta['id'] == criancaId,
-                onTap: () {
-                  ref.read(criancaSelecionadaProvider.notifier).state =
-                      astronauta['id'] as String;
-                  Navigator.of(context).pop();
-                },
-              ),
             const Divider(),
             for (var i = 0; i < _painelResponsavelItens.length; i++)
               ListTile(

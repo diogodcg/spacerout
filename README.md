@@ -129,16 +129,24 @@ linkado — `supabase db push` aplica migrations pendentes direto.
   filtra pelo que é dele ou aberto.
 - **Seletor de criança no painel do responsável**: com até 3
   astronautas por família, o Drawer do "Comando da Missão" ganhou uma
-  lista no topo (nome + saldo de cada astronauta + "Visão geral") —
-  `criancaSelecionadaProvider` guarda a seleção e persiste entre trocas de
-  tela (não precisa reselecionar a cada aba). Com uma criança selecionada,
-  as 4 telas (Missões/Status/Suprimentos/Pedidos) filtram só o que é dela;
-  a AppBar mostra o nome + saldo dela no lugar do título da tela. "Visão
-  geral" volta a mostrar tudo misturado, como antes do seletor existir.
-  Testado no simulador iOS com dois usuários de teste permanentes
+  **dropdown** no topo ("Vendo: Visão geral" / nome + saldo de cada
+  astronauta) — `criancaSelecionadaProvider` guarda a seleção e persiste
+  entre trocas de tela (não precisa reselecionar a cada aba). Com uma
+  criança selecionada, as 4 telas (Missões/Status/Suprimentos/Pedidos)
+  filtram só o que é dela. AppBar agora mostra **duas linhas**: título da
+  seção (Missões, Suprimentos...) em cima, "Visão geral" ou "nome · saldo"
+  embaixo como subtítulo — corrigido depois do feedback de que só trocar o
+  título inteiro perdia o contexto de qual seção estava aberta. Também
+  corrigido um bug clássico do Flutter: `DropdownButtonFormField` sem
+  `key` só lê `initialValue` na primeira montagem e não ressincroniza com
+  o provider depois — resolvido com `key: ValueKey(criancaId)`. Testado no
+  simulador iOS com dois usuários de teste permanentes
   (`astronauta1@astronauta1.com` / `astronauta2@astronauta2.com`, criados
   via Admin API — não conseguem logar pelo app de verdade, só populam dado
   pra teste; **apagar antes de publicar**).
+- **Nomenclatura temática do painel do astronauta**: "Painel de Voo" (era
+  "SpaceRout" genérico) — ecoa `coordenadas_voo`, contrasta com "Comando da
+  Missão" do responsável (ele comanda de fora, a criança pilota de dentro).
 
 ### 🚧 Em aberto
 
