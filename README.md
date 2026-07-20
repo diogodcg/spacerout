@@ -169,6 +169,24 @@ linkado — `supabase db push` aplica migrations pendentes direto.
   pro e-mail real de um filho, aceite automático confirmado (usuário cai
   direto no painel de astronauta, sem passar por onboarding). `flutter
   analyze` limpo.
+- **Push notifications (infra) — escopo Android**: lembrete de missão
+  (`notificar_as`) e escalonamento pro responsável (`PLANO_MIGRACAO.md`
+  §5.1) implementados ponta a ponta. `app/lib/features/notificacoes/`
+  (registro de token FCM em `dispositivos_notificacao`, disparado pelo
+  `_AuthGate` assim que há `usuario_id`) + Edge Function
+  `supabase/functions/enviar-lembretes-missao` (Deno, assina JWT RS256 da
+  service account do Firebase via `npm:jose` pra autenticar contra a FCM
+  HTTP v1 API) + `pg_cron` chamando a function a cada minuto (migration
+  `20260722000000_agendamento_lembretes_missao_pg_cron.sql`). Autenticação
+  `pg_cron → Edge Function` via segredo compartilhado próprio
+  (`x-cron-secret`, guardado no Supabase Vault) em vez das chaves
+  anon/service_role — o projeto já usa as novas API keys
+  (`sb_publishable_/sb_secret_`), que não são JWT e não passam no gate
+  `verify_jwt` das Edge Functions. Testado com `curl` direto na function
+  (200 OK) e `flutter build apk --debug` (build Android limpo). **iOS
+  fica de fora**: enviar push via FCM pro iOS também exige Apple Developer
+  Program pago (APNs Authentication Key só é gerável no portal pago) —
+  mesmo bloqueio do Sign in with Apple, ver item abaixo.
 
 ### 🚧 Em aberto
 
@@ -197,10 +215,12 @@ linkado — `supabase db push` aplica migrations pendentes direto.
   - [ ] Antes de submeter à App Store: obrigatório por regra da Apple
         sempre que Google Sign-In é oferecido em iOS (ver
         PLANO_MIGRACAO.md §5) — não bloqueia desenvolvimento, só submissão
-- [ ] **Push notifications (infra)**: job `pg_cron` + Edge Function que
-      dispara via FCM quando `notificar_as` vence. Schema já pronto; falta
-      deploy da Edge Function (Deno) + credenciais de service account do
-      Firebase
+- [ ] **Push notifications no iOS**: bloqueado pelo mesmo motivo do Sign in
+      with Apple (Apple Developer Program pago, precisa da APNs
+      Authentication Key). `GoogleService-Info.plist` já baixado, guardado
+      pra quando desbloquear — só falta configurar no Xcode + subir a APNs
+      key no Firebase Console + tirar o guard `Platform.isAndroid` de
+      `main.dart`/`notificacoes_providers.dart`
 - [ ] **Telas** — portar do protótipo, uma feature por vez:
   - [x] Auth / onboarding de organização nova
   - [x] Painel do responsável (cadastro de missões e prêmios, aprovação de
@@ -217,7 +237,10 @@ linkado — `supabase db push` aplica migrations pendentes direto.
 spacerout/
   PLANO_MIGRACAO.md   # decisões de arquitetura e o porquê de cada uma
   supabase/
+    config.toml        # config de Edge Functions (ex.: verify_jwt)
     migrations/        # schema, aplicado via `supabase db push`
+    functions/
+      enviar-lembretes-missao/  # lembrete/escalonamento de missão via FCM (pg_cron)
   app/                 # projeto Flutter
     lib/
       core/            # client Supabase, config
@@ -228,5 +251,6 @@ spacerout/
         loja/          # cadastro de prêmios + confirmação de resgates
         relatorio/     # saldo/missões/prêmios por astronauta
         convites/      # convidar responsável/astronauta pra família
+        notificacoes/  # registro de token FCM (push, Android)
       main.dart        # _AuthGate: login → onboarding → painel por role
 ```

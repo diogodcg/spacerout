@@ -1,3 +1,6 @@
+import 'dart:io' show Platform;
+
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -13,6 +16,7 @@ import 'features/loja/presentation/resgates_screen.dart';
 import 'features/missoes/presentation/comprovacoes_screen.dart';
 import 'features/missoes/presentation/missoes_astronauta_screen.dart';
 import 'features/missoes/presentation/missoes_screen.dart';
+import 'features/notificacoes/data/notificacoes_providers.dart';
 import 'features/organizacao/data/organizacao_providers.dart';
 import 'features/organizacao/presentation/onboarding_screen.dart';
 import 'features/relatorio/presentation/relatorio_screen.dart';
@@ -23,6 +27,14 @@ Future<void> main() async {
     url: SupabaseConfig.url,
     publishableKey: SupabaseConfig.publishableKey,
   );
+  // Push notifications (FCM) só tem suporte Android por enquanto — iOS
+  // precisa de APNs Authentication Key, que só é gerável com Apple
+  // Developer Program pago (mesmo bloqueio do Sign in with Apple). Sem
+  // esse guard, Firebase.initializeApp() falharia em runtime no iOS por
+  // não ter GoogleService-Info.plist configurado no Xcode.
+  if (Platform.isAndroid) {
+    await Firebase.initializeApp();
+  }
   runApp(const ProviderScope(child: SpaceRoutApp()));
 }
 
@@ -61,6 +73,7 @@ class _AuthGate extends ConsumerWidget {
     return usuarioAtual.when(
       data: (usuario) {
         if (usuario == null) return const OnboardingScreen();
+        ref.watch(registrarNotificacoesProvider);
         return usuario['role'] == 'responsavel'
             ? const _DrawerShell(
                 headerTitulo: 'Comando da Missão',

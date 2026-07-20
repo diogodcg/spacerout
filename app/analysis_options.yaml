@@ -9,6 +9,14 @@
 # packages, and plugins designed to encourage good coding practices.
 include: package:flutter_lints/flutter.yaml
 
+# `build/` acumula código-fonte de pacotes de terceiros vendorizados pelo
+# Swift Package Manager (ex. example/test do firebase_messaging, com
+# dependências como mockito/flutter_local_notifications que não são desse
+# projeto) — sem excluir, o analyzer tenta analisar esse lixo também.
+analyzer:
+  exclude:
+    - build/**
+
 linter:
   # The lint rules applied to this project can be customized in the
   # section below to disable rules from the `package:flutter_lints/flutter.yaml`
