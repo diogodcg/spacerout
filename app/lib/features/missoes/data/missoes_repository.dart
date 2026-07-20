@@ -29,35 +29,45 @@ class MissoesRepository {
     return List<Map<String, dynamic>>.from(rows);
   }
 
+  /// `astronautaIds` vazio cria 1 linha aberta pra qualquer um; com um ou
+  /// mais, cria uma linha independente por astronauta selecionado — cada
+  /// uma com seu próprio ciclo de comprovação/aprovação, editada
+  /// separadamente (ver [atualizarMissao]).
   Future<void> criarMissao({
     required String organizacaoId,
     required String titulo,
     required int moedas,
     required String recorrencia,
-    String? atribuidoA,
+    required List<String> astronautaIds,
   }) {
-    return _supabase.from('coordenadas_voo').insert({
-      'organizacao_id': organizacaoId,
-      'titulo': titulo,
-      'moedas': moedas,
-      'recorrencia': recorrencia,
-      'atribuido_a': atribuidoA,
-      'criado_por': _supabase.auth.currentUser!.id,
-    });
+    final criadoPor = _supabase.auth.currentUser!.id;
+    final atribuicoes = astronautaIds.isEmpty ? const [null] : astronautaIds;
+    return _supabase.from('coordenadas_voo').insert([
+      for (final astronautaId in atribuicoes)
+        {
+          'organizacao_id': organizacaoId,
+          'titulo': titulo,
+          'moedas': moedas,
+          'recorrencia': recorrencia,
+          'criado_por': criadoPor,
+          'atribuido_a': astronautaId,
+        },
+    ]);
   }
 
+  /// Atribuição não é editável (ver [MissaoFormScreen]) — só título, moedas
+  /// e recorrência, e só da linha em questão (cada astronauta atribuído
+  /// junto na criação é editado separadamente).
   Future<void> atualizarMissao(
     String id, {
     required String titulo,
     required int moedas,
     required String recorrencia,
-    String? atribuidoA,
   }) {
     return _supabase.from('coordenadas_voo').update({
       'titulo': titulo,
       'moedas': moedas,
       'recorrencia': recorrencia,
-      'atribuido_a': atribuidoA,
     }).eq('id', id);
   }
 

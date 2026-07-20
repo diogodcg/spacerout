@@ -1,30 +1,20 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../organizacao/data/organizacao_providers.dart';
 import 'loja_repository.dart';
 
 final lojaRepositoryProvider = Provider<LojaRepository>((ref) {
   return LojaRepository(Supabase.instance.client);
 });
 
-/// Com uma criança selecionada, mostra só os suprimentos atribuídos a ela
-/// exclusivamente — "Visão geral" (null) mostra o catálogo todo.
 final premiosListProvider =
-    FutureProvider.autoDispose<List<Map<String, dynamic>>>((ref) async {
-  final lista = await ref.watch(lojaRepositoryProvider).listarPremios();
-  final crianca = ref.watch(criancaSelecionadaProvider);
-  if (crianca == null) return lista;
-  return lista.where((p) => p['atribuido_a'] == crianca).toList();
+    FutureProvider.autoDispose<List<Map<String, dynamic>>>((ref) {
+  return ref.watch(lojaRepositoryProvider).listarPremios();
 });
 
-/// Com uma criança selecionada, mostra só os resgates feitos por ela.
 final resgatesPendentesProvider =
-    FutureProvider.autoDispose<List<Map<String, dynamic>>>((ref) async {
-  final lista = await ref.watch(lojaRepositoryProvider).listarResgatesPendentes();
-  final crianca = ref.watch(criancaSelecionadaProvider);
-  if (crianca == null) return lista;
-  return lista.where((r) => r['resgatado_por'] == crianca).toList();
+    FutureProvider.autoDispose<List<Map<String, dynamic>>>((ref) {
+  return ref.watch(lojaRepositoryProvider).listarResgatesPendentes();
 });
 
 /// Nomes de prêmio e de quem resgatou, resolvidos em lote junto com a lista

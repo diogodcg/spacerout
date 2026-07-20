@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../organizacao/data/organizacao_providers.dart';
+import '../../organizacao/presentation/astronautas_multi_select.dart';
 import '../data/missoes_providers.dart';
 
 const _recorrencias = {
@@ -30,7 +31,9 @@ class _MissaoFormScreenState extends ConsumerState<MissaoFormScreen> {
     text: widget.missao != null ? '${widget.missao!['moedas']}' : '',
   );
   late String _recorrencia = widget.missao?['recorrencia'] as String? ?? 'diaria';
-  late String? _atribuidoA = widget.missao?['atribuido_a'] as String?;
+  late Set<String> _astronautas = {
+    if (widget.missao?['atribuido_a'] != null) widget.missao!['atribuido_a'] as String,
+  };
   bool _loading = false;
   String? _error;
 
@@ -45,6 +48,10 @@ class _MissaoFormScreenState extends ConsumerState<MissaoFormScreen> {
 
   Future<void> _salvar() async {
     if (!_formKey.currentState!.validate()) return;
+    if (!_editando && _astronautas.isEmpty) {
+      setState(() => _error = 'Selecione um ou mais astronautas.');
+      return;
+    }
 
     setState(() {
       _loading = true;
@@ -59,7 +66,6 @@ class _MissaoFormScreenState extends ConsumerState<MissaoFormScreen> {
           titulo: _tituloController.text.trim(),
           moedas: moedas,
           recorrencia: _recorrencia,
-          atribuidoA: _atribuidoA,
         );
       } else {
         final usuario = ref.read(usuarioAtualProvider).value;
@@ -68,7 +74,7 @@ class _MissaoFormScreenState extends ConsumerState<MissaoFormScreen> {
           titulo: _tituloController.text.trim(),
           moedas: moedas,
           recorrencia: _recorrencia,
-          atribuidoA: _atribuidoA,
+          astronautaIds: _astronautas.toList(),
         );
       }
       ref.invalidate(missoesListProvider);
@@ -132,26 +138,28 @@ class _MissaoFormScreenState extends ConsumerState<MissaoFormScreen> {
                     : (value) => setState(() => _recorrencia = value!),
               ),
               const SizedBox(height: 16),
-              ref.watch(astronautasProvider).when(
-                    data: (astronautas) => DropdownButtonFormField<String?>(
-                      initialValue: _atribuidoA,
-                      decoration: const InputDecoration(
-                        labelText: 'Atribuir a',
-                        border: OutlineInputBorder(),
-                      ),
-                      items: [
-                        const DropdownMenuItem(value: null, child: Text('Qualquer um')),
-                        for (final astronauta in astronautas)
-                          DropdownMenuItem(
-                            value: astronauta['id'] as String,
-                            child: Text(astronauta['nome_exibicao'] as String),
-                          ),
-                      ],
-                      onChanged: _loading ? null : (value) => setState(() => _atribuidoA = value),
-                    ),
-                    loading: () => const LinearProgressIndicator(),
-                    error: (error, _) => Text('Erro ao carregar astronautas: $error'),
-                  ),
+              if (_editando)
+                // Atribuição não é editável depois de criada — a linha já
+                // tem seu próprio ciclo de comprovação, então trocar o
+                // astronauta no meio do caminho é ambíguo. Pra reatribuir,
+                // excluir e recriar.
+                ref.watch(astronautasProvider).when(
+                      data: (astronautas) {
+                        final nomesPorId = {
+                          for (final a in astronautas) a['id'] as String: a['nome_exibicao'] as String,
+                        };
+                        final nomes = _astronautas.map((id) => nomesPorId[id] ?? '?').join(', ');
+                        return Text('Atribuído a: ${nomes.isEmpty ? 'Qualquer um' : nomes}');
+                      },
+                      loading: () => const LinearProgressIndicator(),
+                      error: (error, _) => Text('Erro ao carregar astronautas: $error'),
+                    )
+              else
+                AstronautasMultiSelect(
+                  selecionados: _astronautas,
+                  enabled: !_loading,
+                  onChanged: (value) => setState(() => _astronautas = value),
+                ),
               const SizedBox(height: 24),
               if (_loading)
                 const Center(child: CircularProgressIndicator())

@@ -117,33 +117,35 @@ linkado — `supabase db push` aplica migrations pendentes direto.
   foto visível (signed URL) → crédito de moedas confirmado (saldo 0 → 4);
   resgate → débito atômico confirmado (saldo 4 → 1) → confirmação de
   entrega pelo responsável. `flutter analyze` limpo.
-- **Atribuição de missão/suprimento a um astronauta específico**: até então
-  todo item era "aberto pra qualquer um" (`atribuido_a` nulo); agora dá pra
-  atribuir a uma criança específica (ex.: recompensa combinada só com um
-  filho) — campo "Atribuir a" nos formulários de missão e suprimento.
-  `suprimentos_cosmicos` ganhou a coluna `atribuido_a` (espelhando
-  `coordenadas_voo`, migration
-  `20260720000000_atribuicao_suprimentos_por_astronauta`), com guard no
-  trigger `processar_resgate_suprimento` pra rejeitar resgate de suprimento
-  reservado pra outro astronauta. Painel do astronauta (missões e loja) já
-  filtra pelo que é dele ou aberto.
-- **Seletor de criança no painel do responsável**: com até 3
-  astronautas por família, o Drawer do "Comando da Missão" ganhou uma
-  **dropdown** no topo ("Vendo: Visão geral" / nome + saldo de cada
-  astronauta) — `criancaSelecionadaProvider` guarda a seleção e persiste
-  entre trocas de tela (não precisa reselecionar a cada aba). Com uma
-  criança selecionada, as 4 telas (Missões/Status/Suprimentos/Pedidos)
-  filtram só o que é dela. AppBar agora mostra **duas linhas**: título da
-  seção (Missões, Suprimentos...) em cima, "Visão geral" ou "nome · saldo"
-  embaixo como subtítulo — corrigido depois do feedback de que só trocar o
-  título inteiro perdia o contexto de qual seção estava aberta. Também
-  corrigido um bug clássico do Flutter: `DropdownButtonFormField` sem
-  `key` só lê `initialValue` na primeira montagem e não ressincroniza com
-  o provider depois — resolvido com `key: ValueKey(criancaId)`. Testado no
-  simulador iOS com dois usuários de teste permanentes
-  (`astronauta1@astronauta1.com` / `astronauta2@astronauta2.com`, criados
-  via Admin API — não conseguem logar pelo app de verdade, só populam dado
-  pra teste; **apagar antes de publicar**).
+- **Atribuição de missão/suprimento a um ou mais astronautas** (multi-seleção
+  obrigatória, substituiu a versão anterior de seleção única com "Qualquer
+  um"): formulários de missão/suprimento trocaram o dropdown por uma lista
+  de checkboxes (`AstronautasMultiSelect`, em
+  `app/lib/features/organizacao/presentation/`) — é obrigatório marcar pelo
+  menos um astronauta pra salvar (`'Selecione um ou mais astronautas.'` se
+  nenhum marcado), não existe mais "aberto pra qualquer um" via formulário.
+  Marcar mais de um **duplica**: cria uma linha independente por astronauta
+  (mesmo título/moedas/recorrência/custo), cada uma com seu próprio ciclo de
+  comprovação/aprovação/moedas — **testado e corrigido em duas rodadas**:
+  a primeira versão ligava as linhas por um `missao_grupo_id` pra editar
+  título/moedas em bloco, mas o teste no simulador mostrou que editar uma
+  linha não deve afetar as irmãs (cada astronauta é 100% independente depois
+  de criado) — `missao_grupo_id` foi revertido (migration
+  `20260721010000_remover_grupo_missao`). Suprimento usa uma tabela de
+  junção (`suprimentos_atribuicoes`, migration
+  `20260721000000_atribuicao_multipla_astronautas`) no lugar da antiga
+  coluna `atribuido_a`, com guard equivalente no trigger
+  `processar_resgate_suprimento`. Edição (de missão ou suprimento) não
+  mexe em quem está atribuído — só título/moedas/custo/recorrência daquela
+  linha; pra reatribuir, excluir e recriar.
+- **Tela "Relatório"** (`app/lib/features/relatorio/`): lista cada
+  astronauta com saldo de moedas, missões concluídas/em aberto e prêmios já
+  conquistados (RPC `relatorio_astronautas`) — substitui o seletor de
+  criança que existia antes no Drawer (removido: `criancaSelecionadaProvider`
+  e a filtragem das 4 telas do responsável por ele). Como o Drawer do
+  responsável ficou idêntico ao do astronauta depois da reversão, os dois
+  passaram a usar o mesmo `_DrawerShell` genérico em `main.dart` (a classe
+  `_PainelResponsavel` foi removida).
 - **Nomenclatura temática do painel do astronauta**: "Painel de Voo" (era
   "SpaceRout" genérico) — ecoa `coordenadas_voo`, contrasta com "Comando da
   Missão" do responsável (ele comanda de fora, a criança pilota de dentro).
@@ -157,30 +159,6 @@ linkado — `supabase db push` aplica migrations pendentes direto.
 
 ### 🚧 Em aberto
 
-- [ ] **Repensar atribuição de missão/suprimento por astronauta** — só no
-      painel do responsável, nada muda no do astronauta. Ideia validada
-      depois de usar o app e ouvir feedback de fora:
-  - [ ] Trocar o dropdown "Atribuir a" (seleção única, com "Qualquer um")
-        nos formulários de missão/suprimento por uma lista com todos os
-        astronautas, **multi-seleção** (checkboxes). Selecionar mais de um
-        **duplica**: cria uma linha independente por astronauta escolhido
-        (mesmo título/moedas/recorrência/custo, cada um com seu próprio
-        ciclo de comprovação/aprovação/moedas) — não um `atribuido_a`
-        compartilhado entre eles
-  - [ ] **Reverter o seletor de criança no Drawer** (dropdown "Vendo: Visão
-        geral / nome · saldo" que filtra Missões/Status/Suprimentos/
-        Pedidos) — ficou redundante com a multi-seleção acima e feio depois
-        de usar; remover `criancaSelecionadaProvider` e a filtragem das 4
-        telas por ele
-  - [ ] **Nova tela "Relatório"** (nome ainda em aberto) listando cada
-        astronauta com: saldo de moedas, quantidade de missões concluídas e
-        em aberto, e prêmios já conquistados (resgatados) — cobre a
-        necessidade de acompanhar cada criança, no lugar do seletor
-  - [ ] A coluna `atribuido_a` (já existe em `coordenadas_voo` e
-        `suprimentos_cosmicos`) continua fazendo sentido pra guardar a
-        atribuição de cada linha duplicada — não precisa virar
-        array/many-to-many, já que duplicar a linha resolve o "vários
-        filhos" sem mudar o schema
 - [ ] **Antes de publicar**: apagar os usuários de teste
       `astronauta1@astronauta1.com` / `astronauta2@astronauta2.com`
       (`auth.users` + `usuarios`) e a organização "Família Teste" usada

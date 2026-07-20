@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -15,6 +14,7 @@ import 'features/missoes/presentation/missoes_astronauta_screen.dart';
 import 'features/missoes/presentation/missoes_screen.dart';
 import 'features/organizacao/data/organizacao_providers.dart';
 import 'features/organizacao/presentation/onboarding_screen.dart';
+import 'features/relatorio/presentation/relatorio_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -61,7 +61,10 @@ class _AuthGate extends ConsumerWidget {
       data: (usuario) {
         if (usuario == null) return const OnboardingScreen();
         return usuario['role'] == 'responsavel'
-            ? const _PainelResponsavel()
+            ? const _DrawerShell(
+                headerTitulo: 'Comando da Missão',
+                itens: _painelResponsavelItens,
+              )
             : const _DrawerShell(
                 headerTitulo: 'Painel de Voo',
                 itens: _painelAstronautaItens,
@@ -90,6 +93,7 @@ const _painelResponsavelItens = [
   _PainelItem('Status das Missões', Icons.fact_check, ComprovacoesScreen()),
   _PainelItem('Suprimentos', Icons.inventory_2, PremiosScreen()),
   _PainelItem('Pedidos do Astronauta', Icons.shopping_bag, ResgatesScreen()),
+  _PainelItem('Relatório', Icons.bar_chart, RelatorioScreen()),
 ];
 
 /// Missões em aberto (com envio de comprovação), loja pra resgatar
@@ -100,121 +104,7 @@ const _painelAstronautaItens = [
   _PainelItem('Status dos Suprimentos', Icons.shopping_bag, MeusPedidosScreen()),
 ];
 
-/// Shell do painel do responsável: além dos 4 itens de navegação, o Drawer
-/// tem um seletor de criança no topo (nome + saldo de cada astronauta da
-/// família) — selecionar uma criança filtra Missões/Status/Suprimentos/
-/// Pedidos só pro que é dela; "Visão geral" volta a mostrar tudo misturado.
-/// A seleção persiste entre trocas de tela (fica em [criancaSelecionadaProvider]).
-class _PainelResponsavel extends ConsumerStatefulWidget {
-  const _PainelResponsavel();
-
-  @override
-  ConsumerState<_PainelResponsavel> createState() => _PainelResponsavelState();
-}
-
-class _PainelResponsavelState extends ConsumerState<_PainelResponsavel> {
-  int _indice = 0;
-
-  @override
-  Widget build(BuildContext context) {
-    final criancaId = ref.watch(criancaSelecionadaProvider);
-    final astronautas = ref.watch(astronautasProvider).value ?? const [];
-    final criancaAtual = astronautas.where((a) => a['id'] == criancaId).firstOrNull;
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(_painelResponsavelItens[_indice].titulo),
-            Text(
-              criancaAtual != null
-                  ? '${criancaAtual['nome_exibicao']} · ${criancaAtual['saldo_moedas']} moedas'
-                  : 'Visão geral',
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-          ],
-        ),
-      ),
-      drawer: Drawer(
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView(
-                padding: EdgeInsets.zero,
-                children: [
-                  DrawerHeader(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        const Text(
-                          'Comando da Missão',
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 12),
-                        DropdownButtonFormField<String?>(
-                          // DropdownButtonFormField.initialValue só é lido na
-                          // primeira montagem — sem essa key, o campo "gruda"
-                          // no valor inicial e não acompanha mudanças
-                          // externas em criancaSelecionadaProvider. A key
-                          // força recriar o FormField sempre que a seleção
-                          // mudar por fora.
-                          key: ValueKey(criancaId),
-                          initialValue: criancaId,
-                          isExpanded: true,
-                          decoration: const InputDecoration(
-                            labelText: 'Vendo',
-                            border: OutlineInputBorder(),
-                            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                          ),
-                          items: [
-                            const DropdownMenuItem(value: null, child: Text('Visão geral')),
-                            for (final astronauta in astronautas)
-                              DropdownMenuItem(
-                                value: astronauta['id'] as String,
-                                child: Text(
-                                  '${astronauta['nome_exibicao']} · ${astronauta['saldo_moedas']} moedas',
-                                ),
-                              ),
-                          ],
-                          onChanged: (value) =>
-                              ref.read(criancaSelecionadaProvider.notifier).state = value,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const Divider(),
-                  for (var i = 0; i < _painelResponsavelItens.length; i++)
-                    ListTile(
-                      leading: Icon(_painelResponsavelItens[i].icone),
-                      title: Text(_painelResponsavelItens[i].titulo),
-                      selected: i == _indice,
-                      onTap: () {
-                        setState(() => _indice = i);
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                ],
-              ),
-            ),
-            const Divider(height: 1),
-            ListTile(
-              leading: const Icon(Icons.logout),
-              title: const Text('Sair'),
-              onTap: () => ref.read(authRepositoryProvider).signOut(),
-            ),
-            const SizedBox(height: 8),
-          ],
-        ),
-      ),
-      body: _painelResponsavelItens[_indice].tela,
-    );
-  }
-}
-
-/// Shell do astronauta: navegação por menu-sanduíche (Drawer) em vez de
+/// Shell genérico com navegação por menu-sanduíche (Drawer) em vez de
 /// TabBar — mais legível com rótulos longos e evita o problema de abas
 /// cortadas fora da tela.
 class _DrawerShell extends ConsumerStatefulWidget {

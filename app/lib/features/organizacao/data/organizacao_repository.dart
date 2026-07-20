@@ -19,8 +19,8 @@ class OrganizacaoRepository {
     return _supabase.rpc('criar_organizacao', params: {'p_nome': nome});
   }
 
-  /// Lista de astronautas (filhos) da organização, com saldo — usada pelo
-  /// seletor de criança no painel do responsável.
+  /// Lista de astronautas (filhos) da organização, com saldo — usada nos
+  /// formulários de missão/suprimento (multi-seleção) e na tela Relatório.
   Future<List<Map<String, dynamic>>> listarAstronautas() async {
     final rows = await _supabase
         .from('usuarios')

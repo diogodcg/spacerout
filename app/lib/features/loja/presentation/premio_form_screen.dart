@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../organizacao/data/organizacao_providers.dart';
+import '../../organizacao/presentation/astronautas_multi_select.dart';
 import '../data/loja_providers.dart';
 
 /// Criação/edição de um prêmio (`suprimentos_cosmicos`).
@@ -21,7 +22,10 @@ class _PremioFormScreenState extends ConsumerState<PremioFormScreen> {
   late final _custoController = TextEditingController(
     text: widget.premio != null ? '${widget.premio!['custo_moedas']}' : '',
   );
-  late String? _atribuidoA = widget.premio?['atribuido_a'] as String?;
+  late Set<String> _astronautas = {
+    for (final a in (widget.premio?['suprimentos_atribuicoes'] as List? ?? []))
+      a['astronauta_id'] as String,
+  };
   bool _loading = false;
   String? _error;
 
@@ -36,6 +40,10 @@ class _PremioFormScreenState extends ConsumerState<PremioFormScreen> {
 
   Future<void> _salvar() async {
     if (!_formKey.currentState!.validate()) return;
+    if (!_editando && _astronautas.isEmpty) {
+      setState(() => _error = 'Selecione um ou mais astronautas.');
+      return;
+    }
 
     setState(() {
       _loading = true;
@@ -49,7 +57,6 @@ class _PremioFormScreenState extends ConsumerState<PremioFormScreen> {
           widget.premio!['id'] as String,
           nome: _nomeController.text.trim(),
           custoMoedas: custo,
-          atribuidoA: _atribuidoA,
         );
       } else {
         final usuario = ref.read(usuarioAtualProvider).value;
@@ -57,7 +64,7 @@ class _PremioFormScreenState extends ConsumerState<PremioFormScreen> {
           organizacaoId: usuario!['organizacao_id'] as String,
           nome: _nomeController.text.trim(),
           custoMoedas: custo,
-          atribuidoA: _atribuidoA,
+          astronautaIds: _astronautas.toList(),
         );
       }
       ref.invalidate(premiosListProvider);
@@ -106,26 +113,26 @@ class _PremioFormScreenState extends ConsumerState<PremioFormScreen> {
                 },
               ),
               const SizedBox(height: 16),
-              ref.watch(astronautasProvider).when(
-                    data: (astronautas) => DropdownButtonFormField<String?>(
-                      initialValue: _atribuidoA,
-                      decoration: const InputDecoration(
-                        labelText: 'Atribuir a',
-                        border: OutlineInputBorder(),
-                      ),
-                      items: [
-                        const DropdownMenuItem(value: null, child: Text('Qualquer um')),
-                        for (final astronauta in astronautas)
-                          DropdownMenuItem(
-                            value: astronauta['id'] as String,
-                            child: Text(astronauta['nome_exibicao'] as String),
-                          ),
-                      ],
-                      onChanged: _loading ? null : (value) => setState(() => _atribuidoA = value),
-                    ),
-                    loading: () => const LinearProgressIndicator(),
-                    error: (error, _) => Text('Erro ao carregar astronautas: $error'),
-                  ),
+              if (_editando)
+                // Reserva não é editável depois de criada — pra mudar,
+                // excluir e recriar (mesma lógica de MissaoFormScreen).
+                ref.watch(astronautasProvider).when(
+                      data: (astronautas) {
+                        final nomesPorId = {
+                          for (final a in astronautas) a['id'] as String: a['nome_exibicao'] as String,
+                        };
+                        final nomes = _astronautas.map((id) => nomesPorId[id] ?? '?').join(', ');
+                        return Text('Atribuído a: ${nomes.isEmpty ? 'Qualquer um' : nomes}');
+                      },
+                      loading: () => const LinearProgressIndicator(),
+                      error: (error, _) => Text('Erro ao carregar astronautas: $error'),
+                    )
+              else
+                AstronautasMultiSelect(
+                  selecionados: _astronautas,
+                  enabled: !_loading,
+                  onChanged: (value) => setState(() => _astronautas = value),
+                ),
               const SizedBox(height: 24),
               if (_loading)
                 const Center(child: CircularProgressIndicator())

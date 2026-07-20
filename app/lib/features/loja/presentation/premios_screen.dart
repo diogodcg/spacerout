@@ -48,7 +48,12 @@ class PremiosScreen extends ConsumerWidget {
               itemBuilder: (context, index) {
                 final premio = lista[index];
                 final ativo = premio['ativo'] as bool;
-                final atribuido = nomesPorId[premio['atribuido_a']] ?? 'Qualquer um';
+                final atribuicoes = (premio['suprimentos_atribuicoes'] as List)
+                    .cast<Map<String, dynamic>>();
+                final nomes = atribuicoes
+                    .map((a) => nomesPorId[a['astronauta_id']] ?? '?')
+                    .join(', ');
+                final atribuido = nomes.isEmpty ? 'Qualquer um' : nomes;
                 return ListTile(
                   title: Text(premio['nome'] as String),
                   subtitle: Text('${premio['custo_moedas']} moedas · Atribuído a: $atribuido'),
