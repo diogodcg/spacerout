@@ -30,6 +30,7 @@ class _MissaoFormScreenState extends ConsumerState<MissaoFormScreen> {
     text: widget.missao != null ? '${widget.missao!['moedas']}' : '',
   );
   late String _recorrencia = widget.missao?['recorrencia'] as String? ?? 'diaria';
+  late String? _atribuidoA = widget.missao?['atribuido_a'] as String?;
   bool _loading = false;
   String? _error;
 
@@ -58,6 +59,7 @@ class _MissaoFormScreenState extends ConsumerState<MissaoFormScreen> {
           titulo: _tituloController.text.trim(),
           moedas: moedas,
           recorrencia: _recorrencia,
+          atribuidoA: _atribuidoA,
         );
       } else {
         final usuario = ref.read(usuarioAtualProvider).value;
@@ -66,6 +68,7 @@ class _MissaoFormScreenState extends ConsumerState<MissaoFormScreen> {
           titulo: _tituloController.text.trim(),
           moedas: moedas,
           recorrencia: _recorrencia,
+          atribuidoA: _atribuidoA,
         );
       }
       ref.invalidate(missoesListProvider);
@@ -128,6 +131,27 @@ class _MissaoFormScreenState extends ConsumerState<MissaoFormScreen> {
                     ? null
                     : (value) => setState(() => _recorrencia = value!),
               ),
+              const SizedBox(height: 16),
+              ref.watch(astronautasProvider).when(
+                    data: (astronautas) => DropdownButtonFormField<String?>(
+                      initialValue: _atribuidoA,
+                      decoration: const InputDecoration(
+                        labelText: 'Atribuir a',
+                        border: OutlineInputBorder(),
+                      ),
+                      items: [
+                        const DropdownMenuItem(value: null, child: Text('Qualquer um')),
+                        for (final astronauta in astronautas)
+                          DropdownMenuItem(
+                            value: astronauta['id'] as String,
+                            child: Text(astronauta['nome_exibicao'] as String),
+                          ),
+                      ],
+                      onChanged: _loading ? null : (value) => setState(() => _atribuidoA = value),
+                    ),
+                    loading: () => const LinearProgressIndicator(),
+                    error: (error, _) => Text('Erro ao carregar astronautas: $error'),
+                  ),
               const SizedBox(height: 24),
               if (_loading)
                 const Center(child: CircularProgressIndicator())

@@ -18,4 +18,15 @@ class OrganizacaoRepository {
   Future<void> criarOrganizacao(String nome) {
     return _supabase.rpc('criar_organizacao', params: {'p_nome': nome});
   }
+
+  /// Lista de astronautas (filhos) da organização, com saldo — usada pelo
+  /// seletor de criança no painel do responsável.
+  Future<List<Map<String, dynamic>>> listarAstronautas() async {
+    final rows = await _supabase
+        .from('usuarios')
+        .select('id, nome_exibicao, saldo_moedas')
+        .eq('role', 'astronauta')
+        .order('nome_exibicao');
+    return List<Map<String, dynamic>>.from(rows);
+  }
 }

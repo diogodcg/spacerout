@@ -39,6 +39,10 @@
 	<string>740026619707-fnluf9h6se1vh2s7i7rqh9p2occhleee.apps.googleusercontent.com</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Usado para tirar a foto de comprovação de uma missão.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Usado para escolher a foto de comprovação de uma missão.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

@@ -104,9 +104,48 @@ linkado — `supabase db push` aplica migrations pendentes direto.
     já validado, mas ainda não tem dados reais pra exercitar (depende do
     painel do astronauta enviar comprovação/resgatar suprimento). `flutter
     analyze` limpo.
+- **Painel do astronauta** (`app/lib/features/missoes/.../missoes_astronauta_screen.dart`,
+  `app/lib/features/loja/.../loja_astronauta_screen.dart` +
+  `meus_pedidos_screen.dart`): lista de missões em aberto (atribuídas a ele
+  ou abertas pra qualquer um) com envio de comprovação (`image_picker`,
+  câmera/galeria — permissões `NSCameraUsageDescription`/
+  `NSPhotoLibraryUsageDescription` no `Info.plist`), loja com saldo de
+  moedas e resgate (débito atômico via trigger existente), e "Meus Pedidos"
+  com status do resgate. Testado ponta a ponta no simulador iOS (alternando
+  o `role` da conta de teste via REST API + service role key, já que o app
+  só tem login social): cadastro → comprovação com foto → aprovação com
+  foto visível (signed URL) → crédito de moedas confirmado (saldo 0 → 4);
+  resgate → débito atômico confirmado (saldo 4 → 1) → confirmação de
+  entrega pelo responsável. `flutter analyze` limpo.
+- **Atribuição de missão/suprimento a um astronauta específico**: até então
+  todo item era "aberto pra qualquer um" (`atribuido_a` nulo); agora dá pra
+  atribuir a uma criança específica (ex.: recompensa combinada só com um
+  filho) — campo "Atribuir a" nos formulários de missão e suprimento.
+  `suprimentos_cosmicos` ganhou a coluna `atribuido_a` (espelhando
+  `coordenadas_voo`, migration
+  `20260720000000_atribuicao_suprimentos_por_astronauta`), com guard no
+  trigger `processar_resgate_suprimento` pra rejeitar resgate de suprimento
+  reservado pra outro astronauta. Painel do astronauta (missões e loja) já
+  filtra pelo que é dele ou aberto.
+- **Seletor de criança no painel do responsável**: com até 3
+  astronautas por família, o Drawer do "Comando da Missão" ganhou uma
+  lista no topo (nome + saldo de cada astronauta + "Visão geral") —
+  `criancaSelecionadaProvider` guarda a seleção e persiste entre trocas de
+  tela (não precisa reselecionar a cada aba). Com uma criança selecionada,
+  as 4 telas (Missões/Status/Suprimentos/Pedidos) filtram só o que é dela;
+  a AppBar mostra o nome + saldo dela no lugar do título da tela. "Visão
+  geral" volta a mostrar tudo misturado, como antes do seletor existir.
+  Testado no simulador iOS com dois usuários de teste permanentes
+  (`astronauta1@astronauta1.com` / `astronauta2@astronauta2.com`, criados
+  via Admin API — não conseguem logar pelo app de verdade, só populam dado
+  pra teste; **apagar antes de publicar**).
 
 ### 🚧 Em aberto
 
+- [ ] **Antes de publicar**: apagar os usuários de teste
+      `astronauta1@astronauta1.com` / `astronauta2@astronauta2.com`
+      (`auth.users` + `usuarios`) e a organização "Família Teste" usada
+      pra desenvolvimento
 - [ ] **Sign in with Apple**: adiado — precisa de conta paga no Apple
       Developer Program, que o usuário ainda não tem. O botão de Apple já
       existe na `LoginScreen` (só aparece em iOS/macOS) mas vai dar erro se
@@ -128,7 +167,7 @@ linkado — `supabase db push` aplica migrations pendentes direto.
   - [x] Auth / onboarding de organização nova
   - [x] Painel do responsável (cadastro de missões e prêmios, aprovação de
         comprovação, confirmação de resgate)
-  - [ ] Painel do astronauta (lista de missões, envio de comprovação, loja,
+  - [x] Painel do astronauta (lista de missões, envio de comprovação, loja,
         resgate)
   - [ ] Fluxo de convite (responsável convida, astronauta/segundo
         responsável aceita)

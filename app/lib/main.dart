@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -5,9 +6,12 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'core/supabase_config.dart';
 import 'features/auth/data/auth_providers.dart';
 import 'features/auth/presentation/login_screen.dart';
+import 'features/loja/presentation/loja_astronauta_screen.dart';
+import 'features/loja/presentation/meus_pedidos_screen.dart';
 import 'features/loja/presentation/premios_screen.dart';
 import 'features/loja/presentation/resgates_screen.dart';
 import 'features/missoes/presentation/comprovacoes_screen.dart';
+import 'features/missoes/presentation/missoes_astronauta_screen.dart';
 import 'features/missoes/presentation/missoes_screen.dart';
 import 'features/organizacao/data/organizacao_providers.dart';
 import 'features/organizacao/presentation/onboarding_screen.dart';
@@ -58,35 +62,13 @@ class _AuthGate extends ConsumerWidget {
         if (usuario == null) return const OnboardingScreen();
         return usuario['role'] == 'responsavel'
             ? const _PainelResponsavel()
-            : const _HomePlaceholder();
+            : const _DrawerShell(
+                headerTitulo: 'SpaceRout',
+                itens: _painelAstronautaItens,
+              );
       },
       loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
       error: (error, _) => Scaffold(body: Center(child: Text('Erro: $error'))),
-    );
-  }
-}
-
-/// Shell do astronauta — ainda não implementado (missões/loja do lado da
-/// criança ficam para depois do painel do responsável).
-class _HomePlaceholder extends ConsumerWidget {
-  const _HomePlaceholder();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final user = Supabase.instance.client.auth.currentUser;
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('SpaceRout'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () => ref.read(authRepositoryProvider).signOut(),
-          ),
-        ],
-      ),
-      body: Center(
-        child: Text('Logado como ${user?.email ?? user?.id}'),
-      ),
     );
   }
 }
@@ -99,19 +81,30 @@ class _PainelItem {
   final Widget tela;
 }
 
-const _painelItens = [
+/// Cadastro de missões, aprovação de comprovações ("Status das Missões"),
+/// cadastro de prêmios ("Suprimentos") e confirmação de resgates ("Pedidos
+/// do Astronauta") — ver descrição do domínio em PLANO_MIGRACAO.md §5.5 /
+/// README.md.
+const _painelResponsavelItens = [
   _PainelItem('Missões', Icons.rocket_launch, MissoesScreen()),
   _PainelItem('Status das Missões', Icons.fact_check, ComprovacoesScreen()),
   _PainelItem('Suprimentos', Icons.inventory_2, PremiosScreen()),
   _PainelItem('Pedidos do Astronauta', Icons.shopping_bag, ResgatesScreen()),
 ];
 
-/// Shell do responsável: cadastro de missões, aprovação de comprovações
-/// ("Status das Missões"), cadastro de prêmios ("Suprimentos") e confirmação
-/// de resgates ("Pedidos do Astronauta") — ver descrição do domínio em
-/// PLANO_MIGRACAO.md §5.5 / README.md. Navegação por menu-sanduíche (Drawer)
-/// em vez de TabBar — mais legível com rótulos longos e evita o problema de
-/// abas cortadas fora da tela.
+/// Missões em aberto (com envio de comprovação), loja pra resgatar
+/// suprimentos e histórico dos próprios pedidos.
+const _painelAstronautaItens = [
+  _PainelItem('Missões', Icons.rocket_launch, MissoesAstronautaScreen()),
+  _PainelItem('Loja', Icons.storefront, LojaAstronautaScreen()),
+  _PainelItem('Meus Pedidos', Icons.shopping_bag, MeusPedidosScreen()),
+];
+
+/// Shell do painel do responsável: além dos 4 itens de navegação, o Drawer
+/// tem um seletor de criança no topo (nome + saldo de cada astronauta da
+/// família) — selecionar uma criança filtra Missões/Status/Suprimentos/
+/// Pedidos só pro que é dela; "Visão geral" volta a mostrar tudo misturado.
+/// A seleção persiste entre trocas de tela (fica em [criancaSelecionadaProvider]).
 class _PainelResponsavel extends ConsumerStatefulWidget {
   const _PainelResponsavel();
 
@@ -124,9 +117,15 @@ class _PainelResponsavelState extends ConsumerState<_PainelResponsavel> {
 
   @override
   Widget build(BuildContext context) {
+    final criancaId = ref.watch(criancaSelecionadaProvider);
+    final astronautas = ref.watch(astronautasProvider).value ?? const [];
+    final criancaAtual = astronautas.where((a) => a['id'] == criancaId).firstOrNull;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(_painelItens[_indice].titulo),
+        title: criancaAtual != null
+            ? Text('${criancaAtual['nome_exibicao']} · ${criancaAtual['saldo_moedas']} moedas')
+            : Text(_painelResponsavelItens[_indice].titulo),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
@@ -147,10 +146,32 @@ class _PainelResponsavelState extends ConsumerState<_PainelResponsavel> {
                 ),
               ),
             ),
-            for (var i = 0; i < _painelItens.length; i++)
+            ListTile(
+              leading: const Icon(Icons.groups),
+              title: const Text('Visão geral'),
+              selected: criancaId == null,
+              onTap: () {
+                ref.read(criancaSelecionadaProvider.notifier).state = null;
+                Navigator.of(context).pop();
+              },
+            ),
+            for (final astronauta in astronautas)
               ListTile(
-                leading: Icon(_painelItens[i].icone),
-                title: Text(_painelItens[i].titulo),
+                leading: const Icon(Icons.face),
+                title: Text(astronauta['nome_exibicao'] as String),
+                subtitle: Text('${astronauta['saldo_moedas']} moedas'),
+                selected: astronauta['id'] == criancaId,
+                onTap: () {
+                  ref.read(criancaSelecionadaProvider.notifier).state =
+                      astronauta['id'] as String;
+                  Navigator.of(context).pop();
+                },
+              ),
+            const Divider(),
+            for (var i = 0; i < _painelResponsavelItens.length; i++)
+              ListTile(
+                leading: Icon(_painelResponsavelItens[i].icone),
+                title: Text(_painelResponsavelItens[i].titulo),
                 selected: i == _indice,
                 onTap: () {
                   setState(() => _indice = i);
@@ -160,7 +181,66 @@ class _PainelResponsavelState extends ConsumerState<_PainelResponsavel> {
           ],
         ),
       ),
-      body: _painelItens[_indice].tela,
+      body: _painelResponsavelItens[_indice].tela,
+    );
+  }
+}
+
+/// Shell do astronauta: navegação por menu-sanduíche (Drawer) em vez de
+/// TabBar — mais legível com rótulos longos e evita o problema de abas
+/// cortadas fora da tela.
+class _DrawerShell extends ConsumerStatefulWidget {
+  const _DrawerShell({required this.headerTitulo, required this.itens});
+
+  final String headerTitulo;
+  final List<_PainelItem> itens;
+
+  @override
+  ConsumerState<_DrawerShell> createState() => _DrawerShellState();
+}
+
+class _DrawerShellState extends ConsumerState<_DrawerShell> {
+  int _indice = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.itens[_indice].titulo),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () => ref.read(authRepositoryProvider).signOut(),
+          ),
+        ],
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              child: Align(
+                alignment: Alignment.bottomLeft,
+                child: Text(
+                  widget.headerTitulo,
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+            for (var i = 0; i < widget.itens.length; i++)
+              ListTile(
+                leading: Icon(widget.itens[i].icone),
+                title: Text(widget.itens[i].titulo),
+                selected: i == _indice,
+                onTap: () {
+                  setState(() => _indice = i);
+                  Navigator.of(context).pop();
+                },
+              ),
+          ],
+        ),
+      ),
+      body: widget.itens[_indice].tela,
     );
   }
 }

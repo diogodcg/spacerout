@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/confirm_delete.dart';
+import '../../organizacao/data/organizacao_providers.dart';
 import '../data/loja_providers.dart';
 import 'premio_form_screen.dart';
 
@@ -29,6 +30,10 @@ class PremiosScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final premios = ref.watch(premiosListProvider);
+    final astronautas = ref.watch(astronautasProvider).value ?? const [];
+    final nomesPorId = {
+      for (final a in astronautas) a['id'] as String: a['nome_exibicao'] as String,
+    };
 
     return Scaffold(
       body: premios.when(
@@ -43,9 +48,10 @@ class PremiosScreen extends ConsumerWidget {
               itemBuilder: (context, index) {
                 final premio = lista[index];
                 final ativo = premio['ativo'] as bool;
+                final atribuido = nomesPorId[premio['atribuido_a']] ?? 'Qualquer um';
                 return ListTile(
                   title: Text(premio['nome'] as String),
-                  subtitle: Text('${premio['custo_moedas']} moedas'),
+                  subtitle: Text('${premio['custo_moedas']} moedas · Atribuído a: $atribuido'),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [

@@ -30,11 +30,13 @@ class LojaRepository {
     required String organizacaoId,
     required String nome,
     required int custoMoedas,
+    String? atribuidoA,
   }) {
     return _supabase.from('suprimentos_cosmicos').insert({
       'organizacao_id': organizacaoId,
       'nome': nome,
       'custo_moedas': custoMoedas,
+      'atribuido_a': atribuidoA,
       'criado_por': _supabase.auth.currentUser!.id,
     });
   }
@@ -43,10 +45,12 @@ class LojaRepository {
     String id, {
     required String nome,
     required int custoMoedas,
+    String? atribuidoA,
   }) {
     return _supabase.from('suprimentos_cosmicos').update({
       'nome': nome,
       'custo_moedas': custoMoedas,
+      'atribuido_a': atribuidoA,
     }).eq('id', id);
   }
 
@@ -88,5 +92,43 @@ class LojaRepository {
     return {
       for (final row in rows) row['id'] as String: row['nome_exibicao'] as String,
     };
+  }
+
+  /// Suprimentos ativos relevantes pro astronauta logado: em aberto pra
+  /// qualquer um (`atribuido_a` nulo) ou atribuídos a ele — mesma lógica de
+  /// `MissoesRepository.listarMissoesAstronauta`.
+  Future<List<Map<String, dynamic>>> listarSuprimentosAtivos() async {
+    final uid = _supabase.auth.currentUser!.id;
+    final rows = await _supabase
+        .from('suprimentos_cosmicos')
+        .select()
+        .eq('ativo', true)
+        .or('atribuido_a.eq.$uid,atribuido_a.is.null')
+        .order('custo_moedas', ascending: true);
+    return List<Map<String, dynamic>>.from(rows);
+  }
+
+  /// O trigger `processar_resgate_suprimento` faz a checagem de saldo e o
+  /// débito atômico — se o saldo for insuficiente, o INSERT levanta exceção
+  /// (ver PLANO_MIGRACAO.md / migration de histórico de resgates).
+  Future<void> criarResgate({
+    required String organizacaoId,
+    required String suprimentoId,
+  }) {
+    return _supabase.from('resgates_suprimentos').insert({
+      'organizacao_id': organizacaoId,
+      'suprimento_id': suprimentoId,
+      'resgatado_por': _supabase.auth.currentUser!.id,
+    });
+  }
+
+  Future<List<Map<String, dynamic>>> listarMeusResgates() async {
+    final uid = _supabase.auth.currentUser!.id;
+    final rows = await _supabase
+        .from('resgates_suprimentos')
+        .select()
+        .eq('resgatado_por', uid)
+        .order('created_at', ascending: false);
+    return List<Map<String, dynamic>>.from(rows);
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Cadastro de missões e aprovação de comprovações pelo responsável
@@ -32,12 +34,14 @@ class MissoesRepository {
     required String titulo,
     required int moedas,
     required String recorrencia,
+    String? atribuidoA,
   }) {
     return _supabase.from('coordenadas_voo').insert({
       'organizacao_id': organizacaoId,
       'titulo': titulo,
       'moedas': moedas,
       'recorrencia': recorrencia,
+      'atribuido_a': atribuidoA,
       'criado_por': _supabase.auth.currentUser!.id,
     });
   }
@@ -47,11 +51,13 @@ class MissoesRepository {
     required String titulo,
     required int moedas,
     required String recorrencia,
+    String? atribuidoA,
   }) {
     return _supabase.from('coordenadas_voo').update({
       'titulo': titulo,
       'moedas': moedas,
       'recorrencia': recorrencia,
+      'atribuido_a': atribuidoA,
     }).eq('id', id);
   }
 
@@ -93,5 +99,40 @@ class MissoesRepository {
   /// foto. `foto_url` guarda o path, não uma URL pronta.
   Future<String> urlAssinadaComprovacao(String path) {
     return _supabase.storage.from('comprovacoes').createSignedUrl(path, 3600);
+  }
+
+  /// Missões relevantes pro astronauta logado: em aberto pra qualquer um
+  /// (`atribuido_a` nulo) ou atribuídas a ele — inclui as que ele mesmo já
+  /// enviou/teve aprovadas/rejeitadas, pra servir de histórico/feedback.
+  Future<List<Map<String, dynamic>>> listarMissoesAstronauta() async {
+    final uid = _supabase.auth.currentUser!.id;
+    final rows = await _supabase
+        .from('coordenadas_voo')
+        .select()
+        .eq('ativa', true)
+        .or('atribuido_a.eq.$uid,atribuido_a.is.null')
+        .order('created_at', ascending: false);
+    return List<Map<String, dynamic>>.from(rows);
+  }
+
+  /// Upload da foto (bucket privado `comprovacoes`, path
+  /// `{organizacao_id}/{missao_id}.{extensao}` — ver storage policies) e
+  /// chamada da RPC `enviar_comprovacao_missao`, que valida atribuição/status
+  /// e é o único jeito do astronauta mudar status/foto_url (RLS não permite
+  /// UPDATE direto por ele — ver PLANO_MIGRACAO.md §5.5.2).
+  Future<void> enviarComprovacao({
+    required String organizacaoId,
+    required String missaoId,
+    required Uint8List bytes,
+    required String extensao,
+  }) async {
+    final path = '$organizacaoId/$missaoId.$extensao';
+    await _supabase.storage
+        .from('comprovacoes')
+        .uploadBinary(path, bytes, fileOptions: const FileOptions(upsert: true));
+    await _supabase.rpc('enviar_comprovacao_missao', params: {
+      'p_missao_id': missaoId,
+      'p_foto_url': path,
+    });
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/confirm_delete.dart';
+import '../../organizacao/data/organizacao_providers.dart';
 import '../data/missoes_providers.dart';
 import 'missao_form_screen.dart';
 
@@ -34,6 +35,10 @@ class MissoesScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final missoes = ref.watch(missoesListProvider);
+    final astronautas = ref.watch(astronautasProvider).value ?? const [];
+    final nomesPorId = {
+      for (final a in astronautas) a['id'] as String: a['nome_exibicao'] as String,
+    };
 
     return Scaffold(
       body: missoes.when(
@@ -48,12 +53,14 @@ class MissoesScreen extends ConsumerWidget {
               itemBuilder: (context, index) {
                 final missao = lista[index];
                 final ativa = missao['ativa'] as bool;
+                final atribuido = nomesPorId[missao['atribuido_a']] ?? 'Qualquer um';
                 return ListTile(
                   title: Text(missao['titulo'] as String),
                   subtitle: Text(
                     '${_recorrenciaLabel[missao['recorrencia']]} · '
                     '${missao['moedas']} moedas · '
-                    '${_statusLabel[missao['status']]}',
+                    '${_statusLabel[missao['status']]} · '
+                    'Atribuída a: $atribuido',
                   ),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
