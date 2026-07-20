@@ -1,0 +1,113 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../organizacao/data/organizacao_providers.dart';
+import '../data/convites_providers.dart';
+
+const _roles = {
+  'astronauta': 'Astronauta (criança)',
+  'responsavel': 'Responsável',
+};
+
+/// Criação de convite (`convites_familiares`). Sem edição — o único campo
+/// que muda depois de criado é a expiração, reenviada direto na lista
+/// (ver [ConvitesScreen]).
+class ConviteFormScreen extends ConsumerStatefulWidget {
+  const ConviteFormScreen({super.key});
+
+  @override
+  ConsumerState<ConviteFormScreen> createState() => _ConviteFormScreenState();
+}
+
+class _ConviteFormScreenState extends ConsumerState<ConviteFormScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  String _role = 'astronauta';
+  bool _loading = false;
+  String? _error;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _salvar() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      final usuario = ref.read(usuarioAtualProvider).value;
+      await ref.read(convitesRepositoryProvider).criarConvite(
+            organizacaoId: usuario!['organizacao_id'] as String,
+            email: _emailController.text.trim(),
+            role: _role,
+          );
+      ref.invalidate(convitesListProvider);
+      if (mounted) Navigator.of(context).pop();
+    } catch (e) {
+      setState(() => _error = e.toString());
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Novo convite')),
+      body: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              TextFormField(
+                controller: _emailController,
+                enabled: !_loading,
+                keyboardType: TextInputType.emailAddress,
+                decoration: const InputDecoration(
+                  labelText: 'E-mail convidado',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  final email = value?.trim() ?? '';
+                  return email.contains('@') ? null : 'Digite um e-mail válido.';
+                },
+              ),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                initialValue: _role,
+                decoration: const InputDecoration(
+                  labelText: 'Convidar como',
+                  border: OutlineInputBorder(),
+                ),
+                items: [
+                  for (final entry in _roles.entries)
+                    DropdownMenuItem(value: entry.key, child: Text(entry.value)),
+                ],
+                onChanged: _loading ? null : (value) => setState(() => _role = value!),
+              ),
+              const SizedBox(height: 24),
+              if (_loading)
+                const Center(child: CircularProgressIndicator())
+              else
+                FilledButton(onPressed: _salvar, child: const Text('Enviar convite')),
+              if (_error != null) ...[
+                const SizedBox(height: 16),
+                Text(
+                  _error!,
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

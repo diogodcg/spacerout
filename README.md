@@ -156,13 +156,34 @@ linkado — `supabase db push` aplica migrations pendentes direto.
 - **Logout movido pro rodapé do Drawer** (nos dois painéis): antes era um
   ícone solto na AppBar, agora é um item "Sair" fixo embaixo da lista de
   seções, separado por divisor — padrão mais comum pra ação de sair.
+- **Fluxo de convite** (`app/lib/features/convites/`): tela "Convites" no
+  Drawer do responsável (só ele, não aparece no painel do astronauta) —
+  criar convite (e-mail + role `responsavel`/`astronauta`),
+  listar com status computado no client (`Pendente`/`Aceito`/`Expirado`,
+  a partir de `aceito`/`expira_em` — não existe coluna de status no banco),
+  reenviar (reseta `expira_em` +7 dias) e excluir. O aceite em si já era
+  100% automático desde o schema (trigger `aceitar_convite_no_login` em
+  `auth.users`), então não existe nem precisa existir tela de "aceitar
+  convite" — a pessoa convidada só loga normalmente e cai direto na
+  organização/role certos. Testado ponta a ponta no simulador: convite
+  pro e-mail real de um filho, aceite automático confirmado (usuário cai
+  direto no painel de astronauta, sem passar por onboarding). `flutter
+  analyze` limpo.
 
 ### 🚧 Em aberto
 
-- [ ] **Antes de publicar**: apagar os usuários de teste
-      `astronauta1@astronauta1.com` / `astronauta2@astronauta2.com`
-      (`auth.users` + `usuarios`) e a organização "Família Teste" usada
-      pra desenvolvimento
+- [ ] **Notificar o convidado do convite**: hoje criar um convite só grava a
+      linha no banco — não existe e-mail nem nenhum aviso automático pra
+      quem foi convidado, o responsável precisa avisar manualmente (ex.:
+      WhatsApp) que baixe o app e logue com aquele e-mail. Pra fechar isso
+      de verdade falta: serviço de envio de e-mail (Resend/SendGrid ou
+      similar — conta/API key nova, como o Firebase de push), Edge
+      Function que dispara ao criar o convite, e um link de
+      download real da App Store/Play Store (que só existe depois do app
+      publicado — até lá, o link seria de TestFlight/build interno)
+- [ ] **Antes de publicar**: revisar/apagar organizações e convites de
+      teste usados durante o desenvolvimento (ex.: organização atual
+      "Cau Gomes - Teste")
 - [ ] **Sign in with Apple**: adiado — precisa de conta paga no Apple
       Developer Program, que o usuário ainda não tem. O botão de Apple já
       existe na `LoginScreen` (só aparece em iOS/macOS) mas vai dar erro se
@@ -186,8 +207,7 @@ linkado — `supabase db push` aplica migrations pendentes direto.
         comprovação, confirmação de resgate)
   - [x] Painel do astronauta (lista de missões, envio de comprovação, loja,
         resgate)
-  - [ ] Fluxo de convite (responsável convida, astronauta/segundo
-        responsável aceita)
+  - [x] Fluxo de convite (responsável convida, aceite automático no login)
 - [ ] **Assinatura**: integração RevenueCat + Edge Function que atualiza
       `organizacoes_familiares.plano`/`plano_expira_em`
 
@@ -203,8 +223,10 @@ spacerout/
       core/            # client Supabase, config
       features/
         auth/          # login social (Google/Apple)
-        organizacao/   # onboarding de organização nova
+        organizacao/   # onboarding de organização nova, multi-select de astronautas
         missoes/       # cadastro de missões + aprovação de comprovações
         loja/          # cadastro de prêmios + confirmação de resgates
+        relatorio/     # saldo/missões/prêmios por astronauta
+        convites/      # convidar responsável/astronauta pra família
       main.dart        # _AuthGate: login → onboarding → painel por role
 ```

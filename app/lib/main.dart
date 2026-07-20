@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'core/supabase_config.dart';
 import 'features/auth/data/auth_providers.dart';
 import 'features/auth/presentation/login_screen.dart';
+import 'features/convites/presentation/convites_screen.dart';
 import 'features/loja/presentation/loja_astronauta_screen.dart';
 import 'features/loja/presentation/meus_pedidos_screen.dart';
 import 'features/loja/presentation/premios_screen.dart';
@@ -94,6 +95,7 @@ const _painelResponsavelItens = [
   _PainelItem('Suprimentos', Icons.inventory_2, PremiosScreen()),
   _PainelItem('Pedidos do Astronauta', Icons.shopping_bag, ResgatesScreen()),
   _PainelItem('Relatório', Icons.bar_chart, RelatorioScreen()),
+  _PainelItem('Convites', Icons.person_add, ConvitesScreen()),
 ];
 
 /// Missões em aberto (com envio de comprovação), loja pra resgatar
