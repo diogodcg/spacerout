@@ -157,6 +157,30 @@ linkado — `supabase db push` aplica migrations pendentes direto.
 
 ### 🚧 Em aberto
 
+- [ ] **Repensar atribuição de missão/suprimento por astronauta** — só no
+      painel do responsável, nada muda no do astronauta. Ideia validada
+      depois de usar o app e ouvir feedback de fora:
+  - [ ] Trocar o dropdown "Atribuir a" (seleção única, com "Qualquer um")
+        nos formulários de missão/suprimento por uma lista com todos os
+        astronautas, **multi-seleção** (checkboxes). Selecionar mais de um
+        **duplica**: cria uma linha independente por astronauta escolhido
+        (mesmo título/moedas/recorrência/custo, cada um com seu próprio
+        ciclo de comprovação/aprovação/moedas) — não um `atribuido_a`
+        compartilhado entre eles
+  - [ ] **Reverter o seletor de criança no Drawer** (dropdown "Vendo: Visão
+        geral / nome · saldo" que filtra Missões/Status/Suprimentos/
+        Pedidos) — ficou redundante com a multi-seleção acima e feio depois
+        de usar; remover `criancaSelecionadaProvider` e a filtragem das 4
+        telas por ele
+  - [ ] **Nova tela "Relatório"** (nome ainda em aberto) listando cada
+        astronauta com: saldo de moedas, quantidade de missões concluídas e
+        em aberto, e prêmios já conquistados (resgatados) — cobre a
+        necessidade de acompanhar cada criança, no lugar do seletor
+  - [ ] A coluna `atribuido_a` (já existe em `coordenadas_voo` e
+        `suprimentos_cosmicos`) continua fazendo sentido pra guardar a
+        atribuição de cada linha duplicada — não precisa virar
+        array/many-to-many, já que duplicar a linha resolve o "vários
+        filhos" sem mudar o schema
 - [ ] **Antes de publicar**: apagar os usuários de teste
       `astronauta1@astronauta1.com` / `astronauta2@astronauta2.com`
       (`auth.users` + `usuarios`) e a organização "Família Teste" usada
