@@ -23,6 +23,17 @@ apps nativos iOS/Android em Flutter, backend em Supabase.
 Projeto Supabase: `SpaceRout` (ref `kzizdekhohisnixyzlqj`). CLI local já
 linkado — `supabase db push` aplica migrations pendentes direto.
 
+## Portais externos
+
+| Portal | Pra que serve | Link |
+|---|---|---|
+| Supabase Dashboard | Banco/Auth/RLS/Storage/Edge Functions/Vault (segredos) do projeto `SpaceRout` | [dashboard](https://supabase.com/dashboard/project/kzizdekhohisnixyzlqj) |
+| Resend | Envio dos e-mails de convite (API + verificação de domínio, hoje pendente) | [resend.com/domains](https://resend.com/domains) |
+| Google Cloud Console | Client IDs OAuth (Web/Android/iOS) do login com Google | [console.cloud.google.com/apis/credentials](https://console.cloud.google.com/apis/credentials) |
+| Firebase Console | Projeto FCM (push notifications), `google-services.json`/`GoogleService-Info.plist`, service account | [console.firebase.google.com](https://console.firebase.google.com/) |
+| Apple Developer | Capability "Sign in with Apple", APNs Authentication Key (push iOS) — precisa de conta paga | [developer.apple.com/account](https://developer.apple.com/account) |
+| RevenueCat | Assinatura/IAP (App Store e Play Store) — ainda não integrado | [app.revenuecat.com](https://app.revenuecat.com/) |
+
 ## Estado atual
 
 ### ✅ Feito
