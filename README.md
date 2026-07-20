@@ -232,10 +232,20 @@ linkado — `supabase db push` aplica migrations pendentes direto.
   sobe — respeita "reduzir movimento" do sistema, resto do app sem
   animação. Testado no simulador iOS (precisou subir
   `IPHONEOS_DEPLOYMENT_TARGET` de 13.0 pra 15.0 no Xcode — exigência do
-  Firebase, nunca tinha sido testado no simulador iOS antes). Aplicado só
-  no tema global por enquanto — telas ainda não trocaram seus widgets ad
-  hoc pelos componentes novos (`MissionCard` etc.), fica pro próximo
-  passo.
+  Firebase, nunca tinha sido testado no simulador iOS antes).
+- **Telas migradas pro Design System "Starlight"**: Missões (responsável
+  e astronauta) usam `MissionCard` (status com ícone + rodapé de ações —
+  switch/editar/excluir ou "Enviar prova"); Suprimentos, Loja do
+  astronauta, Pedidos, Resgates e Relatório trocaram os textos soltos de
+  "X moedas" pelo `CoinBadge`; `cardTheme` global cobre os `Card` de
+  Comprovações e Relatório sem precisar mexer nesses arquivos. Corrigido
+  no processo: `FloatingActionButtonThemeData` (o FAB ficava roxo do
+  Material default, fora do tema, só percebido num screenshot real do
+  simulador). Testado com dados sintéticos (astronauta + 2 missões + 1
+  suprimento criados direto no banco via `supabase db query --linked`,
+  depois removidos) — confirmado visualmente no simulador (`MissionCard`
+  com borda verde/cinza por status, `CoinBadge` no Relatório), não só
+  `flutter analyze` limpo.
 
 ### 🚧 Em aberto
 
@@ -277,10 +287,6 @@ linkado — `supabase db push` aplica migrations pendentes direto.
   - [x] Fluxo de convite (responsável convida, aceite automático no login)
 - [ ] **Assinatura**: integração RevenueCat + Edge Function que atualiza
       `organizacoes_familiares.plano`/`plano_expira_em`
-- [ ] **Aplicar o Design System "Starlight" nas telas**: hoje só o tema
-      global está ligado (`AppTheme.spaceRoutTheme`) — as telas
-      existentes ainda usam seus próprios widgets ad hoc, não os
-      componentes novos (`MissionCard`, `CoinBadge`, `PrimarySpaceButton`)
 
 ## Estrutura do repo
 

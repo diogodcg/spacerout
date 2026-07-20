@@ -19,8 +19,12 @@ class AppTheme {
       brightness: Brightness.dark,
       primary: AppColors.stardustYellow,
       onPrimary: AppColors.textOnPrimary,
+      primaryContainer: AppColors.stardustYellow,
+      onPrimaryContainer: AppColors.textOnPrimary,
       secondary: AppColors.nebulaLilac,
       onSecondary: AppColors.textPrimary,
+      secondaryContainer: AppColors.surfaceCard,
+      onSecondaryContainer: AppColors.textPrimary,
       error: AppColors.superNovaRed,
       onError: AppColors.textOnPrimary,
       surface: AppColors.surfaceCard,
@@ -47,6 +51,15 @@ class AppTheme {
       cardColor: AppColors.surfaceCard,
       dividerColor: AppColors.surfaceBorder,
       splashFactory: InkRipple.splashFactory,
+
+      cardTheme: CardThemeData(
+        color: AppColors.surfaceCard,
+        elevation: 0,
+        margin: const EdgeInsets.symmetric(horizontal: AppSpecs.spaceM, vertical: AppSpecs.spaceS),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSpecs.radiusM),
+        ),
+      ),
 
       appBarTheme: AppBarTheme(
         backgroundColor: AppColors.spaceDark,
@@ -165,6 +178,14 @@ class AppTheme {
 
       progressIndicatorTheme: const ProgressIndicatorThemeData(
         color: AppColors.stardustYellow,
+      ),
+
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: AppColors.stardustYellow,
+        foregroundColor: AppColors.textOnPrimary,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSpecs.radiusM),
+        ),
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/confirm_delete.dart';
+import '../../../core/ui/components/mission_card.dart';
 import '../../organizacao/data/organizacao_providers.dart';
 import '../data/missoes_providers.dart';
 import 'missao_form_screen.dart';
@@ -10,13 +11,6 @@ const _recorrenciaLabel = {
   'diaria': 'Diária',
   'semanal': 'Semanal',
   'pontual': 'Pontual',
-};
-
-const _statusLabel = {
-  'disponivel': 'Disponível',
-  'enviada': 'Aguardando aprovação',
-  'aprovada': 'Aprovada',
-  'rejeitada': 'Rejeitada',
 };
 
 class MissoesScreen extends ConsumerWidget {
@@ -49,48 +43,47 @@ class MissoesScreen extends ConsumerWidget {
           return RefreshIndicator(
             onRefresh: () => ref.refresh(missoesListProvider.future),
             child: ListView.builder(
+              padding: const EdgeInsets.all(16),
               itemCount: lista.length,
               itemBuilder: (context, index) {
                 final missao = lista[index];
                 final ativa = missao['ativa'] as bool;
                 final atribuido = nomesPorId[missao['atribuido_a']] ?? 'Qualquer um';
-                return ListTile(
-                  title: Text(missao['titulo'] as String),
-                  subtitle: Text(
-                    '${_recorrenciaLabel[missao['recorrencia']]} · '
-                    '${missao['moedas']} moedas · '
-                    '${_statusLabel[missao['status']]} · '
-                    'Atribuída a: $atribuido',
+                return MissionCard(
+                  title: missao['titulo'] as String,
+                  description:
+                      '${_recorrenciaLabel[missao['recorrencia']]} · Atribuída a: $atribuido',
+                  coins: missao['moedas'] as int,
+                  status: missao['status'] as String,
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => MissaoFormScreen(missao: missao)),
                   ),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Switch(
-                        value: ativa,
-                        onChanged: (value) => ref
-                            .read(missoesRepositoryProvider)
-                            .definirAtiva(missao['id'] as String, value)
-                            .then((_) => ref.invalidate(missoesListProvider)),
+                  actions: [
+                    Switch(
+                      value: ativa,
+                      onChanged: (value) => ref
+                          .read(missoesRepositoryProvider)
+                          .definirAtiva(missao['id'] as String, value)
+                          .then((_) => ref.invalidate(missoesListProvider)),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.edit),
+                      onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => MissaoFormScreen(missao: missao),
+                        ),
                       ),
+                    ),
+                    // Só oferece exclusão para missões ainda não usadas —
+                    // RLS só permite DELETE com status = 'disponivel' (ver
+                    // migration 20260719220000), então mostrar o botão fora
+                    // disso resultaria num toque sem efeito nenhum.
+                    if (missao['status'] == 'disponivel')
                       IconButton(
-                        icon: const Icon(Icons.edit),
-                        onPressed: () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => MissaoFormScreen(missao: missao),
-                          ),
-                        ),
+                        icon: const Icon(Icons.close),
+                        onPressed: () => _excluir(context, ref, missao),
                       ),
-                      // Só oferece exclusão para missões ainda não usadas —
-                      // RLS só permite DELETE com status = 'disponivel' (ver
-                      // migration 20260719220000), então mostrar o botão fora
-                      // disso resultaria num toque sem efeito nenhum.
-                      if (missao['status'] == 'disponivel')
-                        IconButton(
-                          icon: const Icon(Icons.close),
-                          onPressed: () => _excluir(context, ref, missao),
-                        ),
-                    ],
-                  ),
+                  ],
                 );
               },
             ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../core/ui/components/mission_card.dart';
 import '../../organizacao/data/organizacao_providers.dart';
 import '../data/missoes_providers.dart';
 
@@ -9,13 +10,6 @@ const _recorrenciaLabel = {
   'diaria': 'Diária',
   'semanal': 'Semanal',
   'pontual': 'Pontual',
-};
-
-const _statusLabel = {
-  'disponivel': 'Disponível',
-  'enviada': 'Aguardando aprovação',
-  'aprovada': 'Aprovada',
-  'rejeitada': 'Rejeitada',
 };
 
 /// Painel do astronauta: missões em aberto ou já enviadas por ele, com envio
@@ -85,22 +79,23 @@ class MissoesAstronautaScreen extends ConsumerWidget {
         return RefreshIndicator(
           onRefresh: () => ref.refresh(missoesAstronautaProvider.future),
           child: ListView.builder(
+            padding: const EdgeInsets.all(16),
             itemCount: lista.length,
             itemBuilder: (context, index) {
               final missao = lista[index];
               final disponivel = missao['status'] == 'disponivel';
-              return ListTile(
-                title: Text(missao['titulo'] as String),
-                subtitle: Text(
-                  '${_recorrenciaLabel[missao['recorrencia']]} · '
-                  '${missao['moedas']} moedas · '
-                  '${_statusLabel[missao['status']]}',
-                ),
-                trailing: disponivel
-                    ? FilledButton(
-                        onPressed: () => _enviarComprovacao(context, ref, missao),
-                        child: const Text('Enviar prova'),
-                      )
+              return MissionCard(
+                title: missao['titulo'] as String,
+                description: _recorrenciaLabel[missao['recorrencia']] ?? '',
+                coins: missao['moedas'] as int,
+                status: missao['status'] as String,
+                actions: disponivel
+                    ? [
+                        FilledButton(
+                          onPressed: () => _enviarComprovacao(context, ref, missao),
+                          child: const Text('Enviar prova'),
+                        ),
+                      ]
                     : null,
               );
             },

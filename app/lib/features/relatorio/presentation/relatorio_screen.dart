@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/ui/components/coin_badge.dart';
 import '../data/relatorio_providers.dart';
 
 class RelatorioScreen extends ConsumerWidget {
@@ -29,12 +30,17 @@ class RelatorioScreen extends ConsumerWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          astronauta['nome_exibicao'] as String,
-                          style: Theme.of(context).textTheme.titleMedium,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              astronauta['nome_exibicao'] as String,
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                            CoinBadge(coins: astronauta['saldo_moedas'] as int),
+                          ],
                         ),
                         const SizedBox(height: 8),
-                        Text('${astronauta['saldo_moedas']} moedas no saldo'),
                         Text(
                           '${astronauta['missoes_concluidas']} missões concluídas · '
                           '${astronauta['missoes_em_aberto']} em aberto',

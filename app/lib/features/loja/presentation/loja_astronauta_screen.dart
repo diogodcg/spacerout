@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/ui/components/coin_badge.dart';
 import '../../organizacao/data/organizacao_providers.dart';
 import '../data/loja_providers.dart';
 
@@ -58,9 +59,13 @@ class LojaAstronautaScreen extends ConsumerWidget {
       children: [
         Padding(
           padding: const EdgeInsets.all(16),
-          child: Text(
-            'Saldo: $saldo moedas',
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('Saldo', style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(width: 12),
+              CoinBadge(coins: saldo),
+            ],
           ),
         ),
         Expanded(
@@ -78,7 +83,10 @@ class LojaAstronautaScreen extends ConsumerWidget {
                     final custo = suprimento['custo_moedas'] as int;
                     return ListTile(
                       title: Text(suprimento['nome'] as String),
-                      subtitle: Text('$custo moedas'),
+                      subtitle: Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: CoinBadge(coins: custo),
+                      ),
                       trailing: FilledButton(
                         onPressed: saldo >= custo ? () => _resgatar(context, ref, suprimento) : null,
                         child: const Text('Resgatar'),

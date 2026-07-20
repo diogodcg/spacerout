@@ -17,14 +17,20 @@ class MissionCard extends StatelessWidget {
     required this.description,
     required this.coins,
     required this.status,
-    required this.onTap,
+    this.onTap,
+    this.actions,
   });
 
   final String title;
   final String description;
   final int coins;
   final String status; // 'disponivel' | 'enviada' | 'aprovada' | 'rejeitada'
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
+
+  /// Controles específicos da tela (ex.: switch ativa/inativa + editar +
+  /// excluir no painel do responsável, ou "Enviar prova" no do astronauta) —
+  /// renderizados como um rodapé, separados por divisor.
+  final List<Widget>? actions;
 
   ({Color color, IconData icon, String label}) get _statusVisual {
     switch (status) {
@@ -74,36 +80,47 @@ class MissionCard extends StatelessWidget {
           onTap: onTap,
           child: Padding(
             padding: const EdgeInsets.all(AppSpecs.spaceM),
-            child: Row(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(title, style: AppTypography.cardTitle),
-                      const SizedBox(height: AppSpecs.spaceXS),
-                      Text(description, style: AppTypography.bodyText),
-                      const SizedBox(height: AppSpecs.spaceS),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(visual.icon, size: 16, color: visual.color),
-                          const SizedBox(width: AppSpecs.spaceXS),
-                          Text(
-                            visual.label,
-                            style: AppTypography.bodyText.copyWith(
-                              color: visual.color,
-                              fontWeight: FontWeight.w600,
-                            ),
+                          Text(title, style: AppTypography.cardTitle),
+                          const SizedBox(height: AppSpecs.spaceXS),
+                          Text(description, style: AppTypography.bodyText),
+                          const SizedBox(height: AppSpecs.spaceS),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(visual.icon, size: 16, color: visual.color),
+                              const SizedBox(width: AppSpecs.spaceXS),
+                              Text(
+                                visual.label,
+                                style: AppTypography.bodyText.copyWith(
+                                  color: visual.color,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(width: AppSpecs.spaceM),
+                    CoinBadge(coins: coins),
+                  ],
                 ),
-                const SizedBox(width: AppSpecs.spaceM),
-                CoinBadge(coins: coins),
+                if (actions != null) ...[
+                  const SizedBox(height: AppSpecs.spaceS),
+                  Divider(height: 1, color: AppColors.surfaceBorder),
+                  const SizedBox(height: AppSpecs.spaceXS),
+                  Row(mainAxisAlignment: MainAxisAlignment.end, children: actions!),
+                ],
               ],
             ),
           ),

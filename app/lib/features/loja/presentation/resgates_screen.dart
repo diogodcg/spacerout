@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/ui/components/coin_badge.dart';
 import '../data/loja_providers.dart';
 
 /// Fila de resgates solicitados pelos astronautas (`status = 'solicitado'`),
@@ -35,9 +36,15 @@ class ResgatesScreen extends ConsumerWidget {
 
               return ListTile(
                 title: Text(premioNome ?? '...'),
-                subtitle: Text(
-                  'Resgatado por: ${usuarioNome ?? '...'} · '
-                  '${resgate['moedas_gastas']} moedas',
+                subtitle: Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Row(
+                    children: [
+                      CoinBadge(coins: resgate['moedas_gastas'] as int),
+                      const SizedBox(width: 8),
+                      Expanded(child: Text('Resgatado por: ${usuarioNome ?? '...'}')),
+                    ],
+                  ),
                 ),
                 trailing: FilledButton(
                   onPressed: () => _confirmar(ref, id),

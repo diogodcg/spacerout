@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/confirm_delete.dart';
+import '../../../core/ui/components/coin_badge.dart';
 import '../../organizacao/data/organizacao_providers.dart';
 import '../data/loja_providers.dart';
 import 'premio_form_screen.dart';
@@ -56,7 +57,16 @@ class PremiosScreen extends ConsumerWidget {
                 final atribuido = nomes.isEmpty ? 'Qualquer um' : nomes;
                 return ListTile(
                   title: Text(premio['nome'] as String),
-                  subtitle: Text('${premio['custo_moedas']} moedas · Atribuído a: $atribuido'),
+                  subtitle: Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Row(
+                      children: [
+                        CoinBadge(coins: premio['custo_moedas'] as int),
+                        const SizedBox(width: 8),
+                        Expanded(child: Text('Atribuído a: $atribuido')),
+                      ],
+                    ),
+                  ),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [

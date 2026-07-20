@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/ui/components/coin_badge.dart';
 import '../data/loja_providers.dart';
 
 const _statusLabel = {
@@ -32,9 +33,15 @@ class MeusPedidosScreen extends ConsumerWidget {
               final nome = nomes.value?[resgate['suprimento_id']];
               return ListTile(
                 title: Text(nome ?? '...'),
-                subtitle: Text(
-                  '${resgate['moedas_gastas']} moedas · '
-                  '${_statusLabel[resgate['status']]}',
+                subtitle: Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Row(
+                    children: [
+                      CoinBadge(coins: resgate['moedas_gastas'] as int),
+                      const SizedBox(width: 8),
+                      Text(_statusLabel[resgate['status']] ?? ''),
+                    ],
+                  ),
                 ),
               );
             },
