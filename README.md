@@ -59,6 +59,50 @@ linkado — `supabase db push` aplica migrations pendentes direto.
   SHA-256 pro Google em `initialize()`, valor cru pro
   `signInWithIdToken()`) — o Supabase rejeita o token se o nonce não
   bater. Sessão autenticada confirmada com conta real.
+- **Onboarding de organização nova** (`app/lib/features/organizacao/`):
+  `OrganizacaoRepository` busca a linha do usuário em `usuarios` e chama a
+  RPC `criar_organizacao`; `OnboardingScreen` pede o nome da família.
+  `_AuthGate` (`main.dart`) agora decide entre login → onboarding → app
+  autenticado, checando se o usuário logado já tem linha em `usuarios`.
+  Testado ponta a ponta no simulador iOS: login sem organização cai na tela
+  de onboarding, criar a família ("Família Teste") navega pra home. `flutter
+  analyze` limpo.
+- **Painel do responsável** — cadastro de missões/prêmios, aprovação de
+  comprovações e confirmação de resgates:
+  - `app/lib/features/missoes/`: `MissoesRepository`/providers (CRUD de
+    `coordenadas_voo` — criar, editar, ativar/desativar) e
+    `listarComprovacoesPendentes`/`validarComprovacao` (fila de
+    `status = 'enviada'`, aprovar credita moedas via trigger existente,
+    rejeitar não). `MissoesScreen`, `MissaoFormScreen`, `ComprovacoesScreen`
+    (foto via signed URL do bucket privado `comprovacoes`).
+  - `app/lib/features/loja/`: `LojaRepository`/providers (CRUD de
+    `suprimentos_cosmicos`) e `confirmarEntrega` (fila de resgates
+    `status = 'solicitado'` → `'entregue'`). `PremiosScreen`,
+    `PremioFormScreen`, `ResgatesScreen`.
+  - **Exclusão** (botão "X", com diálogo de confirmação em
+    `core/confirm_delete.dart`), distinta do toggle ativa/inativa: dá pro
+    responsável tanto pausar temporariamente uma missão/suprimento quanto
+    excluir de vez o que não serve mais. Missão só pode ser excluída com
+    `status = 'disponivel'` (RLS nova, migration
+    `20260719220000_exclusao_missoes_disponiveis` — uma missão já
+    enviada/aprovada não pode ser apagada pra não perder a trilha de moedas
+    já creditadas); suprimento com resgate vinculado é bloqueado pela FK
+    `on delete restrict` já existente. Testado no simulador iOS: exclusão de
+    missão e de suprimento confirmadas funcionando.
+  - `_AuthGate` (`main.dart`) agora roteia por `usuario['role']`: responsável
+    cai num shell "Comando da Missão" com `TabBar` de nomenclatura temática
+    ("Missões" / "Status das Missões" / "Suprimentos" / "Pedidos do
+    Astronauta", `tabAlignment: TabAlignment.start` pra tirar o recuo padrão
+    do Material 3 e colar a primeira aba na esquerda — só os rótulos
+    visíveis mudaram, classes/tabelas continuam
+    Comprovações/Prêmios/Resgates internamente); astronauta continua no
+    placeholder (painel dele é o próximo passo).
+  - Testado ponta a ponta no simulador iOS: cadastro de missão e de
+    suprimento confirmados funcionando (CRUD completo, toggle ativo/inativa).
+    Fila de "Status das Missões"/"Pedidos do Astronauta" usa o mesmo padrão
+    já validado, mas ainda não tem dados reais pra exercitar (depende do
+    painel do astronauta enviar comprovação/resgatar suprimento). `flutter
+    analyze` limpo.
 
 ### 🚧 Em aberto
 
@@ -80,9 +124,9 @@ linkado — `supabase db push` aplica migrations pendentes direto.
       deploy da Edge Function (Deno) + credenciais de service account do
       Firebase
 - [ ] **Telas** — portar do protótipo, uma feature por vez:
-  - [ ] Auth / onboarding de organização nova
-  - [ ] Painel do responsável (cadastro de missões e prêmios, aprovação de
-        comprovação)
+  - [x] Auth / onboarding de organização nova
+  - [x] Painel do responsável (cadastro de missões e prêmios, aprovação de
+        comprovação, confirmação de resgate)
   - [ ] Painel do astronauta (lista de missões, envio de comprovação, loja,
         resgate)
   - [ ] Fluxo de convite (responsável convida, astronauta/segundo
@@ -100,5 +144,10 @@ spacerout/
   app/                 # projeto Flutter
     lib/
       core/            # client Supabase, config
-      main.dart
+      features/
+        auth/          # login social (Google/Apple)
+        organizacao/   # onboarding de organização nova
+        missoes/       # cadastro de missões + aprovação de comprovações
+        loja/          # cadastro de prêmios + confirmação de resgates
+      main.dart        # _AuthGate: login → onboarding → painel por role
 ```
