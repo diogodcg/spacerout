@@ -187,18 +187,25 @@ linkado — `supabase db push` aplica migrations pendentes direto.
   fica de fora**: enviar push via FCM pro iOS também exige Apple Developer
   Program pago (APNs Authentication Key só é gerável no portal pago) —
   mesmo bloqueio do Sign in with Apple, ver item abaixo.
+- **Notificação de convite por e-mail (Resend)**: criar ou reenviar um
+  convite agora dispara um e-mail de verdade pro convidado — trigger
+  `notificar_convite_por_email` em `convites_familiares` (dispara em
+  `INSERT` ou quando `expira_em` muda no reenvio, nunca no `UPDATE` de
+  aceite automático) chama `net.http_post` pra Edge Function
+  `supabase/functions/enviar-email-convite`, que manda o e-mail via API do
+  Resend. Mesmo padrão de autenticação trigger→function do push
+  (`x-convite-secret` no Vault). **Sem domínio verificado no Resend, só
+  entrega pro próprio e-mail da conta** (remetente padrão
+  `onboarding@resend.dev`) — testado enviando pro e-mail do usuário,
+  recebido com sucesso; falta verificar um domínio antes de mandar pra
+  convidados de verdade. **Sem link de download** no e-mail por enquanto
+  (app não publicado) — só a instrução de pedir o app pra quem convidou.
 
 ### 🚧 Em aberto
 
-- [ ] **Notificar o convidado do convite**: hoje criar um convite só grava a
-      linha no banco — não existe e-mail nem nenhum aviso automático pra
-      quem foi convidado, o responsável precisa avisar manualmente (ex.:
-      WhatsApp) que baixe o app e logue com aquele e-mail. Pra fechar isso
-      de verdade falta: serviço de envio de e-mail (Resend/SendGrid ou
-      similar — conta/API key nova, como o Firebase de push), Edge
-      Function que dispara ao criar o convite, e um link de
-      download real da App Store/Play Store (que só existe depois do app
-      publicado — até lá, o link seria de TestFlight/build interno)
+- [ ] **Verificar um domínio no Resend**: enquanto não verificar, convites
+      só chegam se `email_convidado` for o próprio e-mail da conta Resend
+      — bloqueia mandar de verdade pro filho/segundo responsável
 - [ ] **Antes de publicar**: revisar/apagar organizações e convites de
       teste usados durante o desenvolvimento (ex.: organização atual
       "Cau Gomes - Teste")
@@ -241,6 +248,7 @@ spacerout/
     migrations/        # schema, aplicado via `supabase db push`
     functions/
       enviar-lembretes-missao/  # lembrete/escalonamento de missão via FCM (pg_cron)
+      enviar-email-convite/     # e-mail de convite via Resend (trigger)
   app/                 # projeto Flutter
     lib/
       core/            # client Supabase, config
