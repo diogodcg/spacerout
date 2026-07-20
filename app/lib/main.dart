@@ -91,46 +91,76 @@ class _HomePlaceholder extends ConsumerWidget {
   }
 }
 
+class _PainelItem {
+  const _PainelItem(this.titulo, this.icone, this.tela);
+
+  final String titulo;
+  final IconData icone;
+  final Widget tela;
+}
+
+const _painelItens = [
+  _PainelItem('Missões', Icons.rocket_launch, MissoesScreen()),
+  _PainelItem('Status das Missões', Icons.fact_check, ComprovacoesScreen()),
+  _PainelItem('Suprimentos', Icons.inventory_2, PremiosScreen()),
+  _PainelItem('Pedidos do Astronauta', Icons.shopping_bag, ResgatesScreen()),
+];
+
 /// Shell do responsável: cadastro de missões, aprovação de comprovações
 /// ("Status das Missões"), cadastro de prêmios ("Suprimentos") e confirmação
 /// de resgates ("Pedidos do Astronauta") — ver descrição do domínio em
-/// PLANO_MIGRACAO.md §5.5 / README.md.
-class _PainelResponsavel extends ConsumerWidget {
+/// PLANO_MIGRACAO.md §5.5 / README.md. Navegação por menu-sanduíche (Drawer)
+/// em vez de TabBar — mais legível com rótulos longos e evita o problema de
+/// abas cortadas fora da tela.
+class _PainelResponsavel extends ConsumerStatefulWidget {
   const _PainelResponsavel();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return DefaultTabController(
-      length: 4,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Comando da Missão'),
-          bottom: const TabBar(
-            isScrollable: true,
-            tabAlignment: TabAlignment.start,
-            tabs: [
-              Tab(text: 'Missões'),
-              Tab(text: 'Status das Missões'),
-              Tab(text: 'Suprimentos'),
-              Tab(text: 'Pedidos do Astronauta'),
-            ],
+  ConsumerState<_PainelResponsavel> createState() => _PainelResponsavelState();
+}
+
+class _PainelResponsavelState extends ConsumerState<_PainelResponsavel> {
+  int _indice = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(_painelItens[_indice].titulo),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () => ref.read(authRepositoryProvider).signOut(),
           ),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.logout),
-              onPressed: () => ref.read(authRepositoryProvider).signOut(),
-            ),
-          ],
-        ),
-        body: const TabBarView(
+        ],
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
           children: [
-            MissoesScreen(),
-            ComprovacoesScreen(),
-            PremiosScreen(),
-            ResgatesScreen(),
+            const DrawerHeader(
+              child: Align(
+                alignment: Alignment.bottomLeft,
+                child: Text(
+                  'Comando da Missão',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+            for (var i = 0; i < _painelItens.length; i++)
+              ListTile(
+                leading: Icon(_painelItens[i].icone),
+                title: Text(_painelItens[i].titulo),
+                selected: i == _indice,
+                onTap: () {
+                  setState(() => _indice = i);
+                  Navigator.of(context).pop();
+                },
+              ),
           ],
         ),
       ),
+      body: _painelItens[_indice].tela,
     );
   }
 }

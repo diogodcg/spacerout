@@ -90,13 +90,14 @@ linkado — `supabase db push` aplica migrations pendentes direto.
     `on delete restrict` já existente. Testado no simulador iOS: exclusão de
     missão e de suprimento confirmadas funcionando.
   - `_AuthGate` (`main.dart`) agora roteia por `usuario['role']`: responsável
-    cai num shell "Comando da Missão" com `TabBar` de nomenclatura temática
-    ("Missões" / "Status das Missões" / "Suprimentos" / "Pedidos do
-    Astronauta", `tabAlignment: TabAlignment.start` pra tirar o recuo padrão
-    do Material 3 e colar a primeira aba na esquerda — só os rótulos
-    visíveis mudaram, classes/tabelas continuam
-    Comprovações/Prêmios/Resgates internamente); astronauta continua no
-    placeholder (painel dele é o próximo passo).
+    cai num shell "Comando da Missão" navegado por **menu-sanduíche
+    (Drawer)** — trocado de `TabBar` por feedback de usabilidade (rótulos
+    longos como "Pedidos do Astronauta" cortavam fora da tela numa TabBar
+    scrollável). AppBar mostra a seção atual como título; Drawer lista as 4
+    seções com ícone temático cada (Missões/Status das Missões/Suprimentos/
+    Pedidos do Astronauta — só os rótulos visíveis mudaram, classes/tabelas
+    continuam Comprovações/Prêmios/Resgates internamente); astronauta
+    continua no placeholder (painel dele é o próximo passo).
   - Testado ponta a ponta no simulador iOS: cadastro de missão e de
     suprimento confirmados funcionando (CRUD completo, toggle ativo/inativa).
     Fila de "Status das Missões"/"Pedidos do Astronauta" usa o mesmo padrão
