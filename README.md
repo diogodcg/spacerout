@@ -216,7 +216,11 @@ linkado — `supabase db push` aplica migrations pendentes direto.
 
 - [ ] **Verificar um domínio no Resend**: enquanto não verificar, convites
       só chegam se `email_convidado` for o próprio e-mail da conta Resend
-      — bloqueia mandar de verdade pro filho/segundo responsável
+      — bloqueia mandar de verdade pro filho/segundo responsável.
+      **Adiado de propósito**: Resend verifica domínio via DNS (SPF/DKIM/
+      DMARC), não dá pra verificar um endereço Gmail — precisa comprar um
+      domínio próprio (ex.: `spacerout.com`) primeiro. Retomar quando
+      tiver domínio registrado.
 - [ ] **Antes de publicar**: revisar/apagar organizações e convites de
       teste usados durante o desenvolvimento (ex.: organização atual
       "Cau Gomes - Teste")
