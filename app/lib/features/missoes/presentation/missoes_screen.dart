@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/confirm_delete.dart';
+import '../../../core/ui/components/empty_state.dart';
 import '../../../core/ui/components/mission_card.dart';
 import '../../organizacao/data/organizacao_providers.dart';
 import '../data/missoes_providers.dart';
@@ -38,7 +39,10 @@ class MissoesScreen extends ConsumerWidget {
       body: missoes.when(
         data: (lista) {
           if (lista.isEmpty) {
-            return const Center(child: Text('Nenhuma missão cadastrada ainda.'));
+            return const EmptyState(
+              title: 'Tudo tranquilo por aqui',
+              message: 'Nenhuma missão cadastrada ainda. Crie uma pra começar.',
+            );
           }
           return RefreshIndicator(
             onRefresh: () => ref.refresh(missoesListProvider.future),

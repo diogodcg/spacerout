@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/ui/components/coin_badge.dart';
+import '../../../core/ui/components/empty_state.dart';
 import '../data/relatorio_providers.dart';
 
 class RelatorioScreen extends ConsumerWidget {
@@ -15,7 +16,10 @@ class RelatorioScreen extends ConsumerWidget {
       body: relatorio.when(
         data: (lista) {
           if (lista.isEmpty) {
-            return const Center(child: Text('Nenhum astronauta cadastrado ainda.'));
+            return const EmptyState(
+              title: 'Nenhum astronauta a bordo',
+              message: 'Convide uma criança pra acompanhar o progresso dela por aqui.',
+            );
           }
           return RefreshIndicator(
             onRefresh: () => ref.refresh(relatorioAstronautasProvider.future),

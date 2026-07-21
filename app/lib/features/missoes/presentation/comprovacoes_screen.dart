@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/ui/components/empty_state.dart';
 import '../data/missoes_providers.dart';
 
 /// Fila de comprovações enviadas pelos astronautas (`status = 'enviada'`),
@@ -21,7 +22,10 @@ class ComprovacoesScreen extends ConsumerWidget {
     return comprovacoes.when(
       data: (lista) {
         if (lista.isEmpty) {
-          return const Center(child: Text('Nenhuma comprovação pendente.'));
+          return const EmptyState(
+            title: 'Tudo em dia',
+            message: 'Nenhuma comprovação esperando aprovação no momento.',
+          );
         }
         return RefreshIndicator(
           onRefresh: () => ref.refresh(comprovacoesPendentesProvider.future),

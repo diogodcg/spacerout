@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/confirm_delete.dart';
 import '../../../core/ui/components/coin_badge.dart';
+import '../../../core/ui/components/empty_state.dart';
 import '../../organizacao/data/organizacao_providers.dart';
 import '../data/loja_providers.dart';
 import 'premio_form_screen.dart';
@@ -40,7 +41,10 @@ class PremiosScreen extends ConsumerWidget {
       body: premios.when(
         data: (lista) {
           if (lista.isEmpty) {
-            return const Center(child: Text('Nenhum suprimento cadastrado ainda.'));
+            return const EmptyState(
+              title: 'Loja vazia',
+              message: 'Cadastre um suprimento pra criança poder trocar moedas por ele.',
+            );
           }
           return RefreshIndicator(
             onRefresh: () => ref.refresh(premiosListProvider.future),

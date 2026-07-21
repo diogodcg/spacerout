@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../tokens/app_colors.dart';
 import '../tokens/app_specs.dart';
 import '../tokens/app_typography.dart';
+import 'stellar_mascot.dart';
 
 /// Badge de saldo de moedas cósmicas.
 ///
@@ -85,7 +86,7 @@ class _CoinBadgeState extends State<CoinBadge> with SingleTickerProviderStateMix
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.stars_rounded, color: AppColors.stardustYellow, size: 20),
+          const StellarMascot(size: 20),
           const SizedBox(width: AppSpecs.spaceS),
           Text('${widget.coins}', style: AppTypography.coinCounter),
         ],

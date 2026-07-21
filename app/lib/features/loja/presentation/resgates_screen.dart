@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/ui/components/coin_badge.dart';
+import '../../../core/ui/components/empty_state.dart';
 import '../data/loja_providers.dart';
 
 /// Fila de resgates solicitados pelos astronautas (`status = 'solicitado'`),
@@ -22,7 +23,10 @@ class ResgatesScreen extends ConsumerWidget {
     return resgates.when(
       data: (lista) {
         if (lista.isEmpty) {
-          return const Center(child: Text('Nenhum resgate pendente.'));
+          return const EmptyState(
+            title: 'Tudo em dia',
+            message: 'Nenhum resgate esperando confirmação no momento.',
+          );
         }
         return RefreshIndicator(
           onRefresh: () => ref.refresh(resgatesPendentesProvider.future),

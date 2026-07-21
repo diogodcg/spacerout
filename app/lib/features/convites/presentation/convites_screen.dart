@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/confirm_delete.dart';
+import '../../../core/ui/components/empty_state.dart';
 import '../data/convites_providers.dart';
 import 'convite_form_screen.dart';
 
@@ -36,7 +37,10 @@ class ConvitesScreen extends ConsumerWidget {
       body: convites.when(
         data: (lista) {
           if (lista.isEmpty) {
-            return const Center(child: Text('Nenhum convite enviado ainda.'));
+            return const EmptyState(
+              title: 'Ninguém convidado ainda',
+              message: 'Convide o resto da família pra participar da missão.',
+            );
           }
           return RefreshIndicator(
             onRefresh: () => ref.refresh(convitesListProvider.future),

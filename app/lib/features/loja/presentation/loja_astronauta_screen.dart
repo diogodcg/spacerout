@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/ui/components/coin_badge.dart';
+import '../../../core/ui/components/empty_state.dart';
 import '../../organizacao/data/organizacao_providers.dart';
 import '../data/loja_providers.dart';
 
@@ -72,7 +73,10 @@ class LojaAstronautaScreen extends ConsumerWidget {
           child: suprimentos.when(
             data: (lista) {
               if (lista.isEmpty) {
-                return const Center(child: Text('Nenhum suprimento disponível ainda.'));
+                return const EmptyState(
+                  title: 'Loja vazia',
+                  message: 'Nenhum suprimento disponível ainda. Volte mais tarde!',
+                );
               }
               return RefreshIndicator(
                 onRefresh: () => ref.refresh(suprimentosAtivosProvider.future),

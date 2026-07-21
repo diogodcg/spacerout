@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/ui/components/coin_badge.dart';
+import '../../../core/ui/components/empty_state.dart';
 import '../data/loja_providers.dart';
 
 const _statusLabel = {
@@ -22,7 +23,10 @@ class MeusPedidosScreen extends ConsumerWidget {
     return resgates.when(
       data: (lista) {
         if (lista.isEmpty) {
-          return const Center(child: Text('Nenhum pedido ainda.'));
+          return const EmptyState(
+            title: 'Nenhum pedido ainda',
+            message: 'Troque suas moedas por um prêmio na loja quando quiser.',
+          );
         }
         return RefreshIndicator(
           onRefresh: () => ref.refresh(meusResgatesProvider.future),

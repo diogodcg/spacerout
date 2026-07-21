@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../core/ui/components/empty_state.dart';
 import '../../../core/ui/components/mission_card.dart';
 import '../../organizacao/data/organizacao_providers.dart';
 import '../data/missoes_providers.dart';
@@ -74,7 +75,10 @@ class MissoesAstronautaScreen extends ConsumerWidget {
     return missoes.when(
       data: (lista) {
         if (lista.isEmpty) {
-          return const Center(child: Text('Nenhuma missão disponível ainda.'));
+          return const EmptyState(
+            title: 'Tudo tranquilo por aqui',
+            message: 'Nenhuma missão disponível ainda. Volte mais tarde!',
+          );
         }
         return RefreshIndicator(
           onRefresh: () => ref.refresh(missoesAstronautaProvider.future),
