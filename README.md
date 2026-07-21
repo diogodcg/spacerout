@@ -246,6 +246,23 @@ linkado — `supabase db push` aplica migrations pendentes direto.
   depois removidos) — confirmado visualmente no simulador (`MissionCard`
   com borda verde/cinza por status, `CoinBadge` no Relatório), não só
   `flutter analyze` limpo.
+- **Mascote "Stellar"** (tag `v0.0.8`): primeira peça de identidade visual
+  além dos tokens do Starlight — nasceu de uma exploração com 3 direções
+  (cometa/símbolo da moeda, astronauta cadete, drone de missão),
+  apresentada num artefato visual com mockups ao vivo antes de
+  implementar. `StellarMascot` (`core/ui/components/stellar_mascot.dart`)
+  é um `CustomPainter` puro, sem asset de imagem, então nunca borra em
+  nenhum tamanho. Substitui o ícone padrão do Flutter (iOS/Android/Web,
+  via `flutter_launcher_icons` a partir de `assets/branding/`), o ícone
+  genérico do `CoinBadge`, e virou a base de um novo componente
+  `EmptyState` (mascote + título + mensagem) que trocou o texto seco de
+  "Nenhum X cadastrado ainda" em 8 telas (missões, comprovações,
+  convites, relatório, pedidos, resgates, loja) por algo mais acolhedor.
+  Estático por design — a única animação do sistema continua sendo o
+  "twinkle" do `CoinBadge`, não o mascote em si. Ficou de fora por
+  enquanto: ícone monocromático dedicado pra barra de notificação do
+  Android (guideline própria da plataforma, precisa de emulador Android
+  pra testar, que não tinha disponível na sessão).
 
 ### 🚧 Em aberto
 
@@ -256,6 +273,11 @@ linkado — `supabase db push` aplica migrations pendentes direto.
       DMARC), não dá pra verificar um endereço Gmail — precisa comprar um
       domínio próprio (ex.: `spacerout.com`) primeiro. Retomar quando
       tiver domínio registrado.
+- [ ] **Ícone de notificação monocromático (Android)**: a barra de status
+      do Android hoje herda o ícone colorido do app (`Stellar`), mas a
+      guideline do Material Design pede um ícone dedicado, só silhueta
+      branca. Não fiz ainda por falta de emulador Android pra validar
+      visualmente.
 - [ ] **Antes de publicar**: revisar/apagar organizações e convites de
       teste usados durante o desenvolvimento (ex.: organização atual
       "Cau Gomes - Teste")
