@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/friendly_error.dart';
 import '../../../core/ui/components/primary_space_button.dart';
 import '../../organizacao/data/organizacao_providers.dart';
 import '../../organizacao/presentation/astronautas_multi_select.dart';
@@ -76,7 +77,7 @@ class _MissaoFormScreenState extends ConsumerState<MissaoFormScreen> {
       ref.invalidate(missoesListProvider);
       if (mounted) Navigator.of(context).pop();
     } catch (e) {
-      setState(() => _error = e.toString());
+      setState(() => _error = descreverErro(e));
     } finally {
       if (mounted) setState(() => _loading = false);
     }

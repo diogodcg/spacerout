@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/confirm_delete.dart';
+import '../../../core/friendly_error.dart';
 import '../../../core/ui/components/empty_state.dart';
 import '../../../core/ui/components/mission_card.dart';
 import '../../organizacao/data/organizacao_providers.dart';
@@ -20,6 +21,22 @@ class MissoesScreen extends ConsumerWidget {
     if (!confirmado) return;
     await ref.read(missoesRepositoryProvider).excluirMissao(missao['id'] as String);
     ref.invalidate(missoesListProvider);
+  }
+
+  Future<void> _definirAtiva(
+    BuildContext context,
+    WidgetRef ref,
+    String id,
+    bool value,
+  ) async {
+    try {
+      await ref.read(missoesRepositoryProvider).definirAtiva(id, value);
+      ref.invalidate(missoesListProvider);
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(descreverErro(e))));
+      }
+    }
   }
 
   @override
@@ -60,10 +77,8 @@ class MissoesScreen extends ConsumerWidget {
                   actions: [
                     Switch(
                       value: ativa,
-                      onChanged: (value) => ref
-                          .read(missoesRepositoryProvider)
-                          .definirAtiva(missao['id'] as String, value)
-                          .then((_) => ref.invalidate(missoesListProvider)),
+                      onChanged: (value) =>
+                          _definirAtiva(context, ref, missao['id'] as String, value),
                     ),
                     IconButton(
                       icon: const Icon(Icons.edit),

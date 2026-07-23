@@ -1,0 +1,19 @@
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+/// Traduz erros técnicos conhecidos (ex.: limite do plano gratuito, que o
+/// banco recusa via trigger `verificar_limite_freemium`) pra mensagens que
+/// fazem sentido pro usuário, sem código/detalhe de banco. Erros não
+/// mapeados caem no `toString()` de sempre.
+String descreverErro(Object erro) {
+  if (erro is PostgrestException && erro.code == '23514') {
+    if (erro.message.contains('coordenadas_voo')) {
+      return 'O plano gratuito permite no máximo 5 missões ativas ao mesmo '
+          'tempo. Desative ou exclua uma antes de ativar esta.';
+    }
+    if (erro.message.contains('suprimentos_cosmicos')) {
+      return 'O plano gratuito permite no máximo 5 suprimentos ativos ao '
+          'mesmo tempo. Desative ou exclua um antes de ativar este.';
+    }
+  }
+  return erro.toString();
+}

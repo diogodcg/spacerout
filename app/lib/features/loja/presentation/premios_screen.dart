@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/confirm_delete.dart';
+import '../../../core/friendly_error.dart';
 import '../../../core/ui/components/coin_badge.dart';
 import '../../../core/ui/components/empty_state.dart';
 import '../../organizacao/data/organizacao_providers.dart';
@@ -25,6 +26,22 @@ class PremiosScreen extends ConsumerWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Não foi possível excluir: já tem resgate vinculado a esse suprimento.')),
         );
+      }
+    }
+  }
+
+  Future<void> _definirAtivo(
+    BuildContext context,
+    WidgetRef ref,
+    String id,
+    bool value,
+  ) async {
+    try {
+      await ref.read(lojaRepositoryProvider).definirAtivo(id, value);
+      ref.invalidate(premiosListProvider);
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(descreverErro(e))));
       }
     }
   }
@@ -76,10 +93,8 @@ class PremiosScreen extends ConsumerWidget {
                     children: [
                       Switch(
                         value: ativo,
-                        onChanged: (value) => ref
-                            .read(lojaRepositoryProvider)
-                            .definirAtivo(premio['id'] as String, value)
-                            .then((_) => ref.invalidate(premiosListProvider)),
+                        onChanged: (value) =>
+                            _definirAtivo(context, ref, premio['id'] as String, value),
                       ),
                       IconButton(
                         icon: const Icon(Icons.edit),
