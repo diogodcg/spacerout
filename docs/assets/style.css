@@ -1,0 +1,268 @@
+:root {
+  --space-dark: #101223;
+  --surface-card: #1a1d36;
+  --surface-border: #2a2e52;
+  --stardust-yellow: #ffe082;
+  --aurora-green: #a5d6a7;
+  --nebula-lilac: #9c8eb9;
+  --supernova-red: #ff8a80;
+  --text-primary: #f4f5f7;
+  --text-secondary: #a0a5c0;
+  --text-on-primary: #101223;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--space-dark);
+  color: var(--text-secondary);
+  font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1.6;
+}
+
+h1, h2, h3, .brand-word {
+  font-family: "Space Grotesk", -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+a {
+  color: var(--stardust-yellow);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.wrap {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+header.site-header {
+  border-bottom: 1px solid var(--surface-border);
+  padding: 20px 0;
+}
+
+header.site-header .wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.brand img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+
+nav.site-nav {
+  display: flex;
+  gap: 20px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+nav.site-nav a {
+  color: var(--text-secondary);
+}
+
+nav.site-nav a.active,
+nav.site-nav a:hover {
+  color: var(--stardust-yellow);
+}
+
+main {
+  padding: 56px 0 80px;
+}
+
+.hero {
+  text-align: center;
+  padding: 24px 0 48px;
+}
+
+.hero img {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  margin-bottom: 24px;
+}
+
+.hero h1 {
+  font-size: 34px;
+  margin: 0 0 12px;
+}
+
+.hero p.subtitle {
+  font-size: 17px;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.cta-row {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 28px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  display: inline-block;
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  padding: 13px 24px;
+  border-radius: 999px;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--stardust-yellow);
+  color: var(--text-on-primary);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--surface-border);
+}
+
+.btn[aria-disabled="true"] {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin: 40px 0;
+}
+
+@media (max-width: 640px) {
+  .steps {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  background: var(--surface-card);
+  border: 1px solid var(--surface-border);
+  border-radius: 20px;
+  padding: 24px;
+}
+
+.card .step-number {
+  font-family: "Space Mono", monospace;
+  color: var(--stardust-yellow);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.card h3 {
+  font-size: 17px;
+  margin: 8px 0 8px;
+}
+
+.card p {
+  font-size: 14px;
+  margin: 0;
+}
+
+section.block {
+  margin: 48px 0;
+}
+
+section.block h2 {
+  font-size: 22px;
+  border-bottom: 1px solid var(--surface-border);
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+.page-title {
+  font-size: 30px;
+  margin-bottom: 8px;
+}
+
+.page-updated {
+  font-size: 13px;
+  color: var(--nebula-lilac);
+  margin-bottom: 40px;
+}
+
+details.faq-item {
+  background: var(--surface-card);
+  border: 1px solid var(--surface-border);
+  border-radius: 16px;
+  padding: 4px 20px;
+  margin-bottom: 12px;
+}
+
+details.faq-item summary {
+  cursor: pointer;
+  font-family: "Space Grotesk", sans-serif;
+  color: var(--text-primary);
+  font-weight: 700;
+  font-size: 15px;
+  padding: 16px 0;
+  list-style: none;
+}
+
+details.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+details.faq-item summary::after {
+  content: "+";
+  float: right;
+  color: var(--stardust-yellow);
+  font-size: 20px;
+}
+
+details.faq-item[open] summary::after {
+  content: "\2212";
+}
+
+details.faq-item p {
+  padding-bottom: 18px;
+  margin: 0;
+  font-size: 14px;
+}
+
+footer.site-footer {
+  border-top: 1px solid var(--surface-border);
+  padding: 28px 0;
+  text-align: center;
+  font-size: 13px;
+  color: var(--nebula-lilac);
+}
+
+footer.site-footer a {
+  color: var(--nebula-lilac);
+}
+
+.badge-mascot {
+  position: fixed;
+  inset: auto;
+}

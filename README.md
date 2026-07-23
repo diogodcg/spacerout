@@ -356,7 +356,37 @@ linkado — `supabase db push` aplica migrations pendentes direto.
   adicionado (confirmado vendo o mesmo efeito depois no ícone do Play
   Store) — não era um problema real do nosso ícone.
 
+- **Site institucional** (`docs/`, 2026-07-23): 3 páginas estáticas (Sobre,
+  Perguntas frequentes, Privacidade e Termos) no mesmo Design System
+  "Starlight" (paleta/tipografia do app), publicadas via GitHub Pages
+  no domínio próprio `spacerout.com.br`. Resolve a exigência de link de
+  política de privacidade da Play Store. A política cobre LGPD com
+  cuidado extra pela parte de crianças: base legal por tratamento (art.
+  7º), consentimento específico do responsável pra dados de criança
+  (art. 14), encarregado/DPO nomeado (art. 41), lista completa de
+  direitos do titular + revogação de consentimento + canal da ANPD
+  (art. 18). **Não é validação jurídica** — recomendado revisar com
+  advogado antes de publicar de verdade, principalmente a parte de
+  crianças (ver "Em aberto"). Falta: habilitar o GitHub Pages no repo
+  e cadastrar os registros DNS no Registro.br apontando pro domínio.
+
 ### 🚧 Em aberto
+
+- [ ] **Publicar o site institucional**: habilitar GitHub Pages (Settings →
+      Pages → Source: `main` / `docs`) e cadastrar no Registro.br os
+      registros A (apex) + CNAME (`www`) que o GitHub Pages exige, pro
+      domínio `spacerout.com.br` apontar pro site em `docs/`.
+- [ ] **Revisão jurídica da política de privacidade**: o texto em
+      `docs/privacidade.html` foi escrito com cuidado (cobre LGPD art.
+      7º/14/18/41), mas não é validação jurídica formal. Recomendado
+      revisar com advogado antes de publicar nas lojas, especialmente
+      pela parte de consentimento parental de crianças.
+- [ ] **Consentimento parental de crianças (produto, não só texto)**: hoje
+      o login é sempre social (Google/Apple), inclusive pro astronauta —
+      não existe uma etapa separada de consentimento parental explícito
+      no fluxo de convite/onboarding além do responsável digitar o e-mail
+      da criança. Vale decidir com calma se isso precisa de um passo a
+      mais no fluxo antes de publicar de verdade.
 
 - [ ] **Atualizar texto do e-mail de convite com link da loja**: hoje
       (`supabase/functions/enviar-email-convite/index.ts`) pede pra
