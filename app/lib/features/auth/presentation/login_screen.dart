@@ -2,6 +2,8 @@ import 'package:flutter/foundation.dart' show kIsWeb, TargetPlatform, defaultTar
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/ui/components/primary_space_button.dart';
+import '../../../core/ui/tokens/app_typography.dart';
 import '../data/auth_providers.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -45,26 +47,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                'SpaceRout',
-                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-              ),
+              Text('SpaceRout', style: AppTypography.displayHeader),
               const SizedBox(height: 48),
-              if (_loading) const CircularProgressIndicator(),
-              if (!_loading) ...[
-                FilledButton.icon(
-                  onPressed: () => _handle(repo.signInWithGoogle),
-                  icon: const Icon(Icons.login),
-                  label: const Text('Entrar com Google'),
+              PrimarySpaceButton(
+                label: 'Entrar com Google',
+                icon: Icons.login,
+                isLoading: _loading,
+                onPressed: () => _handle(repo.signInWithGoogle),
+              ),
+              if (showApple) ...[
+                const SizedBox(height: 12),
+                PrimarySpaceButton(
+                  label: 'Entrar com Apple',
+                  icon: Icons.apple,
+                  isLoading: _loading,
+                  onPressed: () => _handle(repo.signInWithApple),
                 ),
-                if (showApple) ...[
-                  const SizedBox(height: 12),
-                  FilledButton.icon(
-                    onPressed: () => _handle(repo.signInWithApple),
-                    icon: const Icon(Icons.apple),
-                    label: const Text('Entrar com Apple'),
-                  ),
-                ],
               ],
               if (_error != null) ...[
                 const SizedBox(height: 24),

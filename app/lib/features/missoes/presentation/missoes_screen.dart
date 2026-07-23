@@ -6,13 +6,8 @@ import '../../../core/ui/components/empty_state.dart';
 import '../../../core/ui/components/mission_card.dart';
 import '../../organizacao/data/organizacao_providers.dart';
 import '../data/missoes_providers.dart';
+import '../data/recorrencia_labels.dart';
 import 'missao_form_screen.dart';
-
-const _recorrenciaLabel = {
-  'diaria': 'Diária',
-  'semanal': 'Semanal',
-  'pontual': 'Pontual',
-};
 
 class MissoesScreen extends ConsumerWidget {
   const MissoesScreen({super.key});
@@ -56,7 +51,7 @@ class MissoesScreen extends ConsumerWidget {
                 return MissionCard(
                   title: missao['titulo'] as String,
                   description:
-                      '${_recorrenciaLabel[missao['recorrencia']]} · Atribuída a: $atribuido',
+                      '${recorrenciaLabel[missao['recorrencia']]} · Atribuída a: $atribuido',
                   coins: missao['moedas'] as int,
                   status: missao['status'] as String,
                   onTap: () => Navigator.of(context).push(

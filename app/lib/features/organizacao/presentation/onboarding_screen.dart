@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/ui/components/primary_space_button.dart';
+import '../../../core/ui/tokens/app_typography.dart';
 import '../../auth/data/auth_providers.dart';
 import '../data/organizacao_providers.dart';
 
@@ -64,10 +66,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
+                Text(
                   'Como sua família vai se chamar no SpaceRout?',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                  style: AppTypography.cardTitle,
                 ),
                 const SizedBox(height: 24),
                 TextFormField(
@@ -75,23 +77,18 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   enabled: !_loading,
                   autofocus: true,
                   textInputAction: TextInputAction.done,
-                  decoration: const InputDecoration(
-                    labelText: 'Nome da família',
-                    border: OutlineInputBorder(),
-                  ),
+                  decoration: const InputDecoration(labelText: 'Nome da família'),
                   onFieldSubmitted: (_) => _criarOrganizacao(),
                   validator: (value) => (value == null || value.trim().isEmpty)
                       ? 'Digite um nome para a família.'
                       : null,
                 ),
                 const SizedBox(height: 24),
-                if (_loading)
-                  const CircularProgressIndicator()
-                else
-                  FilledButton(
-                    onPressed: _criarOrganizacao,
-                    child: const Text('Criar família'),
-                  ),
+                PrimarySpaceButton(
+                  label: 'Criar família',
+                  onPressed: _criarOrganizacao,
+                  isLoading: _loading,
+                ),
                 if (_error != null) ...[
                   const SizedBox(height: 24),
                   Text(

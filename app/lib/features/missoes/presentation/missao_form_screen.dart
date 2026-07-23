@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/ui/components/primary_space_button.dart';
 import '../../organizacao/data/organizacao_providers.dart';
 import '../../organizacao/presentation/astronautas_multi_select.dart';
 import '../data/missoes_providers.dart';
-
-const _recorrencias = {
-  'diaria': 'Diária',
-  'semanal': 'Semanal',
-  'pontual': 'Pontual',
-};
+import '../data/recorrencia_labels.dart';
 
 /// Criação/edição de uma missão (`coordenadas_voo`). Em modo de edição só
 /// altera título/moedas/recorrência — status e aprovação ficam em
@@ -100,10 +96,7 @@ class _MissaoFormScreenState extends ConsumerState<MissaoFormScreen> {
               TextFormField(
                 controller: _tituloController,
                 enabled: !_loading,
-                decoration: const InputDecoration(
-                  labelText: 'Título',
-                  border: OutlineInputBorder(),
-                ),
+                decoration: const InputDecoration(labelText: 'Título'),
                 validator: (value) => (value == null || value.trim().isEmpty)
                     ? 'Digite um título.'
                     : null,
@@ -113,10 +106,7 @@ class _MissaoFormScreenState extends ConsumerState<MissaoFormScreen> {
                 controller: _moedasController,
                 enabled: !_loading,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'Moedas',
-                  border: OutlineInputBorder(),
-                ),
+                decoration: const InputDecoration(labelText: 'Moedas'),
                 validator: (value) {
                   final n = int.tryParse(value?.trim() ?? '');
                   return (n == null || n <= 0) ? 'Digite um número maior que zero.' : null;
@@ -125,12 +115,9 @@ class _MissaoFormScreenState extends ConsumerState<MissaoFormScreen> {
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
                 initialValue: _recorrencia,
-                decoration: const InputDecoration(
-                  labelText: 'Recorrência',
-                  border: OutlineInputBorder(),
-                ),
+                decoration: const InputDecoration(labelText: 'Recorrência'),
                 items: [
-                  for (final entry in _recorrencias.entries)
+                  for (final entry in recorrenciaLabel.entries)
                     DropdownMenuItem(value: entry.key, child: Text(entry.value)),
                 ],
                 onChanged: _loading
@@ -161,10 +148,11 @@ class _MissaoFormScreenState extends ConsumerState<MissaoFormScreen> {
                   onChanged: (value) => setState(() => _astronautas = value),
                 ),
               const SizedBox(height: 24),
-              if (_loading)
-                const Center(child: CircularProgressIndicator())
-              else
-                FilledButton(onPressed: _salvar, child: const Text('Salvar')),
+              PrimarySpaceButton(
+                label: 'Salvar',
+                onPressed: _salvar,
+                isLoading: _loading,
+              ),
               if (_error != null) ...[
                 const SizedBox(height: 16),
                 Text(

@@ -6,12 +6,7 @@ import '../../../core/ui/components/empty_state.dart';
 import '../../../core/ui/components/mission_card.dart';
 import '../../organizacao/data/organizacao_providers.dart';
 import '../data/missoes_providers.dart';
-
-const _recorrenciaLabel = {
-  'diaria': 'Diária',
-  'semanal': 'Semanal',
-  'pontual': 'Pontual',
-};
+import '../data/recorrencia_labels.dart';
 
 /// Painel do astronauta: missões em aberto ou já enviadas por ele, com envio
 /// de comprovação (foto) para as que ainda estão `disponivel`.
@@ -90,7 +85,7 @@ class MissoesAstronautaScreen extends ConsumerWidget {
               final disponivel = missao['status'] == 'disponivel';
               return MissionCard(
                 title: missao['titulo'] as String,
-                description: _recorrenciaLabel[missao['recorrencia']] ?? '',
+                description: recorrenciaLabel[missao['recorrencia']] ?? '',
                 coins: missao['moedas'] as int,
                 status: missao['status'] as String,
                 actions: disponivel

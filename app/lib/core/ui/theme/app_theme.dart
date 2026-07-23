@@ -123,8 +123,14 @@ class AppTheme {
         ),
       ),
 
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
+      // O app só usa `FilledButton` (nunca `ElevatedButton` puro) — por isso
+      // é `filledButtonTheme`, não `elevatedButtonTheme`, que precisa levar
+      // a cor primária. `PrimarySpaceButton` cobre o CTA único de cada tela
+      // (com glow e loading embutido); este tema cobre os `FilledButton`
+      // compactos usados dentro de cards/listas/diálogos, que não cabem no
+      // formato full-width do `PrimarySpaceButton`.
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
           backgroundColor: AppColors.stardustYellow,
           foregroundColor: AppColors.textOnPrimary,
           textStyle: AppTypography.buttonLabel,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/ui/components/primary_space_button.dart';
 import '../../organizacao/data/organizacao_providers.dart';
 import '../data/convites_providers.dart';
 
@@ -70,10 +71,7 @@ class _ConviteFormScreenState extends ConsumerState<ConviteFormScreen> {
                 controller: _emailController,
                 enabled: !_loading,
                 keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(
-                  labelText: 'E-mail convidado',
-                  border: OutlineInputBorder(),
-                ),
+                decoration: const InputDecoration(labelText: 'E-mail convidado'),
                 validator: (value) {
                   final email = value?.trim() ?? '';
                   return email.contains('@') ? null : 'Digite um e-mail válido.';
@@ -82,10 +80,7 @@ class _ConviteFormScreenState extends ConsumerState<ConviteFormScreen> {
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
                 initialValue: _role,
-                decoration: const InputDecoration(
-                  labelText: 'Convidar como',
-                  border: OutlineInputBorder(),
-                ),
+                decoration: const InputDecoration(labelText: 'Convidar como'),
                 items: [
                   for (final entry in _roles.entries)
                     DropdownMenuItem(value: entry.key, child: Text(entry.value)),
@@ -93,10 +88,11 @@ class _ConviteFormScreenState extends ConsumerState<ConviteFormScreen> {
                 onChanged: _loading ? null : (value) => setState(() => _role = value!),
               ),
               const SizedBox(height: 24),
-              if (_loading)
-                const Center(child: CircularProgressIndicator())
-              else
-                FilledButton(onPressed: _salvar, child: const Text('Enviar convite')),
+              PrimarySpaceButton(
+                label: 'Enviar convite',
+                onPressed: _salvar,
+                isLoading: _loading,
+              ),
               if (_error != null) ...[
                 const SizedBox(height: 16),
                 Text(

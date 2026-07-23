@@ -74,7 +74,7 @@ class LojaAstronautaScreen extends ConsumerWidget {
             data: (lista) {
               if (lista.isEmpty) {
                 return const EmptyState(
-                  title: 'Loja vazia',
+                  title: 'Suprimentos vazios',
                   message: 'Nenhum suprimento disponível ainda. Volte mais tarde!',
                 );
               }

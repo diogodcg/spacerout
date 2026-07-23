@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/ui/components/empty_state.dart';
+import '../../../core/ui/tokens/app_typography.dart';
 import '../data/missoes_providers.dart';
 
 /// Fila de comprovações enviadas pelos astronautas (`status = 'enviada'`),
@@ -47,7 +48,7 @@ class ComprovacoesScreen extends ConsumerWidget {
                     children: [
                       Text(
                         missao['titulo'] as String,
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        style: AppTypography.cardTitle,
                       ),
                       const SizedBox(height: 4),
                       Text('Enviado por: ${nome ?? '...'} · ${missao['moedas']} moedas'),

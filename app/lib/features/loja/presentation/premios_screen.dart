@@ -42,7 +42,7 @@ class PremiosScreen extends ConsumerWidget {
         data: (lista) {
           if (lista.isEmpty) {
             return const EmptyState(
-              title: 'Loja vazia',
+              title: 'Suprimentos vazios',
               message: 'Cadastre um suprimento pra criança poder trocar moedas por ele.',
             );
           }

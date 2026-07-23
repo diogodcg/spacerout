@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/ui/tokens/app_typography.dart';
 import '../data/organizacao_providers.dart';
 
 /// Lista de astronautas da organização com checkbox — usada nos formulários
@@ -26,9 +27,9 @@ class AstronautasMultiSelect extends ConsumerWidget {
           data: (astronautas) => Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Padding(
-                padding: EdgeInsets.only(bottom: 4),
-                child: Text('Atribuir a', style: TextStyle(fontSize: 12)),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Text('Atribuir a', style: AppTypography.bodyText.copyWith(fontSize: 12)),
               ),
               Card(
                 margin: EdgeInsets.zero,

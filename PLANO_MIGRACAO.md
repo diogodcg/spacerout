@@ -270,17 +270,19 @@ do status de entrega. A entrega (`status_entrega`: `pendente`/`entregue`,
 confirmada depois pelo responsável) é só o registro de que o prêmio físico
 foi de fato entregue, sem afetar saldo.
 
-**Decidido — nova tabela `resgates_cosmicos`** (mesmo padrão de nome
-temático de `suprimentos_cosmicos`): `id`, `organizacao_id`,
-`suprimento_id` (FK `suprimentos_cosmicos`), `solicitado_por` (FK
-`usuarios`, o astronauta), `custo_moedas` (snapshot do preço no momento do
-resgate — o preço do prêmio pode mudar depois sem afetar resgates já
-feitos), `status_entrega` (novo enum `entrega_status`: `pendente` |
-`entregue`), `data_resgate`, `entregue_por` (FK `usuarios`, o responsável),
-`data_entrega`.
+**Decidido — nova tabela `resgates_suprimentos`** (nome implementado;
+diverge do `resgates_cosmicos` cogitado aqui na hora do desenho —
+`suprimentos_cosmicos` já carrega o tema espacial, então o histórico de
+resgate ficou nomeado a partir dela em vez de repetir o sufixo
+`_cosmicos`): `id`, `organizacao_id`, `suprimento_id` (FK
+`suprimentos_cosmicos`), `resgatado_por` (FK `usuarios`, o astronauta),
+`moedas_gastas` (snapshot do preço no momento do resgate — o preço do
+prêmio pode mudar depois sem afetar resgates já feitos), `status` (enum
+`resgate_status`: `solicitado` | `entregue`), `created_at`, `entregue_por`
+(FK `usuarios`, o responsável), `data_entrega`.
 
 **Decidido — débito de moedas imediato via trigger**, espelhando o
-protótipo: `aplicar_moedas_resgate` (`after insert`) decrementa
+protótipo: `processar_resgate_suprimento` (`before insert`) decrementa
 `usuarios.saldo_moedas` na hora do resgate, não na confirmação de entrega.
 
 **Decidido — validação de saldo suficiente movida pro banco.** No

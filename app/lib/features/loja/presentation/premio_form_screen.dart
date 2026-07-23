@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/ui/components/primary_space_button.dart';
 import '../../organizacao/data/organizacao_providers.dart';
 import '../../organizacao/presentation/astronautas_multi_select.dart';
 import '../data/loja_providers.dart';
@@ -90,10 +91,7 @@ class _PremioFormScreenState extends ConsumerState<PremioFormScreen> {
               TextFormField(
                 controller: _nomeController,
                 enabled: !_loading,
-                decoration: const InputDecoration(
-                  labelText: 'Nome do suprimento',
-                  border: OutlineInputBorder(),
-                ),
+                decoration: const InputDecoration(labelText: 'Nome do suprimento'),
                 validator: (value) => (value == null || value.trim().isEmpty)
                     ? 'Digite um nome.'
                     : null,
@@ -103,10 +101,7 @@ class _PremioFormScreenState extends ConsumerState<PremioFormScreen> {
                 controller: _custoController,
                 enabled: !_loading,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'Custo em moedas',
-                  border: OutlineInputBorder(),
-                ),
+                decoration: const InputDecoration(labelText: 'Custo em moedas'),
                 validator: (value) {
                   final n = int.tryParse(value?.trim() ?? '');
                   return (n == null || n <= 0) ? 'Digite um número maior que zero.' : null;
@@ -134,10 +129,11 @@ class _PremioFormScreenState extends ConsumerState<PremioFormScreen> {
                   onChanged: (value) => setState(() => _astronautas = value),
                 ),
               const SizedBox(height: 24),
-              if (_loading)
-                const Center(child: CircularProgressIndicator())
-              else
-                FilledButton(onPressed: _salvar, child: const Text('Salvar')),
+              PrimarySpaceButton(
+                label: 'Salvar',
+                onPressed: _salvar,
+                isLoading: _loading,
+              ),
               if (_error != null) ...[
                 const SizedBox(height: 16),
                 Text(
