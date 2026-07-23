@@ -263,6 +263,45 @@ linkado — `supabase db push` aplica migrations pendentes direto.
   enquanto: ícone monocromático dedicado pra barra de notificação do
   Android (guideline própria da plataforma, precisa de emulador Android
   pra testar, que não tinha disponível na sessão).
+- **Auditoria de padrões do Design System "Starlight"** (tag `v0.0.9`):
+  catálogo de todos os padrões de nomenclatura/estrutura do projeto
+  (pastas por feature, convenção de classes, terminologia por role,
+  enums) apresentado num artefato visual antes de qualquer mudança, pra
+  decisão informada do usuário sobre o que valia corrigir. Correções
+  aplicadas: `PrimarySpaceButton` (existia mas nunca era usado) agora é
+  o CTA das 5 telas com botão único de formulário (Salvar
+  missão/suprimento, Enviar convite, Criar família, Entrar com
+  Google/Apple), com loading embutido no lugar do
+  `if (_loading) spinner else FilledButton` repetido em cada tela;
+  `elevatedButtonTheme` (morto — o app só usa `FilledButton`, nunca
+  `ElevatedButton`) virou `filledButtonTheme` de verdade, cobrindo os
+  botões compactos inline (Aprovar, Enviar prova, Confirmar entrega,
+  Resgatar); removida a borda manual que sobrescrevia o tema em 4
+  formulários; 5 `TextStyle` soltos trocados pelos tokens de
+  `AppTypography`; "Loja vazia" → "Suprimentos vazios" (a última string
+  visível que ainda usava o nome pré-rename); mapa de rótulo de
+  recorrência, duplicado em 3 arquivos com 2 nomes diferentes,
+  consolidado em `features/missoes/data/recorrencia_labels.dart`; enum
+  `user_role` renomeado pra `role_tipo` (alinha com o padrão `_tipo`/
+  `_status` dos outros enums do schema); `PLANO_MIGRACAO.md` corrigido
+  pra refletir o schema real de `resgates_suprimentos` (divergia do
+  `resgates_cosmicos` cogitado no plano original). Deixado de propósito
+  fora do escopo: renomear a tabela `resgates_suprimentos` em si — já é
+  referenciada em várias telas/RLS/triggers, risco não compensa o ganho
+  cosmético.
+- **Tela "Início" (Home)** pros dois roles (tag `v0.0.9`): antes o app
+  caía direto em "Missões" sem nenhuma saudação. Novo primeiro item do
+  Drawer em `features/home/` — mascote Stellar, saudação com o nome do
+  usuário e cartões-resumo (`SummaryTile`,
+  `core/ui/components/summary_tile.dart`) reaproveitando providers já
+  existentes, sem repositório novo: responsável vê comprovações/pedidos
+  aguardando e quantos astronautas tem na família; astronauta vê saldo
+  de moedas (`CoinBadge`) e quantas missões estão disponíveis/aguardando
+  aprovação. Testado no simulador nos dois roles — pro astronauta, como
+  o login é só social e os mocks não têm credencial real, a verificação
+  foi feita alternando temporariamente o role da conta real via
+  `supabase db query --linked` (mesmo padrão já usado antes pra testar o
+  painel do astronauta), revertido logo em seguida.
 
 ### 🚧 Em aberto
 
@@ -280,7 +319,9 @@ linkado — `supabase db push` aplica migrations pendentes direto.
       visualmente.
 - [ ] **Antes de publicar**: revisar/apagar organizações e convites de
       teste usados durante o desenvolvimento (ex.: organização atual
-      "Cau Gomes - Teste")
+      "Cau Gomes - Teste") — inclui os 2 astronautas mock (2026-07-22,
+      com missões/suprimentos/resgate sintéticos) criados pra demo
+      manual do projeto, deixados de propósito até essa etapa
 - [ ] **Sign in with Apple**: adiado — precisa de conta paga no Apple
       Developer Program, que o usuário ainda não tem. O botão de Apple já
       existe na `LoginScreen` (só aparece em iOS/macOS) mas vai dar erro se
@@ -327,6 +368,7 @@ spacerout/
         ui/            # Design System "Starlight" (tokens, componentes, tema)
       features/
         auth/          # login social (Google/Apple)
+        home/          # tela "Início" (boas-vindas + resumo) por role
         organizacao/   # onboarding de organização nova, multi-select de astronautas
         missoes/       # cadastro de missões + aprovação de comprovações
         loja/          # cadastro de prêmios + confirmação de resgates
