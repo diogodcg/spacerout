@@ -42,7 +42,7 @@ Deno.serve(async (req) => {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: "SpaceRout <onboarding@resend.dev>",
+      from: "SpaceRout <contato@spacerout.com.br>",
       to: [convite.email_convidado],
       subject: `Você foi convidado pra família "${nomeFamilia}" no SpaceRout!`,
       html: `

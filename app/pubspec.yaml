@@ -62,6 +62,8 @@ flutter_launcher_icons:
   ios: true
   android: true
   remove_alpha_ios: true
+  adaptive_icon_background: "#101223"
+  adaptive_icon_foreground: "assets/branding/stellar_icon_foreground_1024.png"
   web:
     generate: true
     background_color: "#101223"

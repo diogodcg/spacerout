@@ -327,16 +327,42 @@ linkado — `supabase db push` aplica migrations pendentes direto.
   nas listas — que antes nem tratavam esse erro (falhavam em silêncio,
   sem feedback nenhum pro usuário). Testado no simulador com a
   organização já no limite de 5 itens ativos.
+- **Domínio próprio verificado no Resend** (2026-07-23): comprado
+  `spacerout.com.br` (Registro.br), registros DNS (DKIM, SPF/MX, DMARC)
+  cadastrados e verificados no Resend. `enviar-email-convite/index.ts`
+  trocou o remetente de `onboarding@resend.dev` (sandbox, só entregava
+  pro próprio e-mail da conta) pra `SpaceRout <contato@spacerout.com.br>`,
+  deploy feito. Testado ponta a ponta: convite real criado via
+  `supabase db query --linked` pro e-mail do usuário
+  (`diogo.dcg@gmail.com`), `net._http_response` confirmou 200 do Resend,
+  e-mail chegou certinho na caixa — convite de teste removido depois.
+  Texto do e-mail ainda pede pra "quem convidou passar o aplicativo"
+  em vez de linkar a loja, porque o app não está publicado ainda —
+  decisão de propósito, atualizar quando publicar (ver "Em aberto").
+- **Ícone adaptativo do Android** (2026-07-23): o ícone do app na tela
+  inicial não tinha configuração de ícone adaptativo (`flutter_launcher_icons`
+  só usava `image_path`, um PNG quadrado único) — Android 8+ trata isso
+  como "legacy icon" e o resultado varia por launcher. Adicionado
+  `adaptive_icon_background`/`adaptive_icon_foreground` no `pubspec.yaml`,
+  com um novo asset só da mascote em fundo transparente
+  (`assets/branding/stellar_icon_foreground.svg`/`.png`, sem o encolhimento
+  manual que cheguei a tentar primeiro — o inset de 16% que o próprio
+  `flutter_launcher_icons` aplica já é a margem de segurança recomendada
+  pelo Android, encolher os dois juntos deixava a mascote pequena demais).
+  Testado no emulador Android: ícone correto e completo (com a
+  estrelinha) tanto na gaveta de apps quanto via Configurações → Todos
+  os apps. Um "anel amarelo" que apareceu durante os testes na tela
+  inicial era só o destaque temporário do launcher pra ícone recém
+  adicionado (confirmado vendo o mesmo efeito depois no ícone do Play
+  Store) — não era um problema real do nosso ícone.
 
 ### 🚧 Em aberto
 
-- [ ] **Verificar um domínio no Resend**: enquanto não verificar, convites
-      só chegam se `email_convidado` for o próprio e-mail da conta Resend
-      — bloqueia mandar de verdade pro filho/segundo responsável.
-      **Adiado de propósito**: Resend verifica domínio via DNS (SPF/DKIM/
-      DMARC), não dá pra verificar um endereço Gmail — precisa comprar um
-      domínio próprio (ex.: `spacerout.com`) primeiro. Retomar quando
-      tiver domínio registrado.
+- [ ] **Atualizar texto do e-mail de convite com link da loja**: hoje
+      (`supabase/functions/enviar-email-convite/index.ts`) pede pra
+      "quem convidou passar o aplicativo" porque o app ainda não está
+      publicado. Assim que sair a ficha na Play Store, trocar esse
+      trecho por um link direto de download.
 - [ ] **Ícone de notificação monocromático (Android)**: a barra de status
       do Android hoje herda o ícone colorido do app (`Stellar`), mas a
       guideline do Material Design pede um ícone dedicado, só silhueta
