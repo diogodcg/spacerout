@@ -302,6 +302,31 @@ linkado — `supabase db push` aplica migrations pendentes direto.
   foi feita alternando temporariamente o role da conta real via
   `supabase db query --linked` (mesmo padrão já usado antes pra testar o
   painel do astronauta), revertido logo em seguida.
+- **Emulador Android configurado nessa máquina** (2026-07-23): SDK já
+  existia (via Android Studio) mas sem `cmdline-tools`/AVD — instalado
+  `cmdline-tools` via Homebrew e criado o AVD `SpaceRout_Pixel_Play`
+  (Pixel 7, imagem Google Play `android-34`). App testado ponta a ponta
+  nele: comportamento idêntico ao iOS em todas as telas. Único ponto
+  que precisou de ajuste no ambiente (não no código): o
+  `google_sign_in` v7 usa o Credential Manager do Android, que só
+  autentica se já existir uma conta Google cadastrada no sistema —
+  precisou entrar com uma conta de verdade em Configurações → Contas
+  antes do "Entrar com Google" funcionar (a primeira tentativa, com uma
+  imagem "Google APIs" sem Play Store, nem chegava a oferecer isso).
+- **Mensagem amigável pro limite do plano gratuito** (tag `v0.1.0`):
+  ao tentar ativar uma 6ª missão ou suprimento, o trigger
+  `verificar_limite_freemium` recusava a operação, mas o app mostrava o
+  erro cru do Postgres (`PostgrestException(message: Plano gratuito
+  permite no máximo 5 itens ativos em coordenadas_voo, code: 23514...`)
+  — achado testando no emulador Android. Novo helper
+  `core/friendly_error.dart` (`descreverErro`) reconhece esse erro
+  específico (código `23514` + nome da tabela na mensagem) e troca por
+  uma frase sem jargão técnico, diferenciando missão de suprimento.
+  Aplicado nos 4 lugares que podem disparar o limite: criar/editar
+  missão, criar/editar suprimento, e os switches de ativar/desativar
+  nas listas — que antes nem tratavam esse erro (falhavam em silêncio,
+  sem feedback nenhum pro usuário). Testado no simulador com a
+  organização já no limite de 5 itens ativos.
 
 ### 🚧 Em aberto
 
@@ -315,8 +340,10 @@ linkado — `supabase db push` aplica migrations pendentes direto.
 - [ ] **Ícone de notificação monocromático (Android)**: a barra de status
       do Android hoje herda o ícone colorido do app (`Stellar`), mas a
       guideline do Material Design pede um ícone dedicado, só silhueta
-      branca. Não fiz ainda por falta de emulador Android pra validar
-      visualmente.
+      branca. Ainda não feito, mas o motivo antigo (falta de emulador
+      Android) não existe mais — emulador `SpaceRout_Pixel_Play`
+      configurado em 2026-07-23 (Google Play, ver checkpoint abaixo),
+      dá pra validar visualmente quando for fazer.
 - [ ] **Antes de publicar**: revisar/apagar organizações e convites de
       teste usados durante o desenvolvimento (ex.: organização atual
       "Cau Gomes - Teste") — inclui os 2 astronautas mock (2026-07-22,
