@@ -7,9 +7,12 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'core/supabase_config.dart';
 import 'core/ui/theme/app_theme.dart';
+import 'core/ui/tokens/app_typography.dart';
 import 'features/auth/data/auth_providers.dart';
 import 'features/auth/presentation/login_screen.dart';
 import 'features/convites/presentation/convites_screen.dart';
+import 'features/home/presentation/home_astronauta_screen.dart';
+import 'features/home/presentation/home_responsavel_screen.dart';
 import 'features/loja/presentation/loja_astronauta_screen.dart';
 import 'features/loja/presentation/meus_pedidos_screen.dart';
 import 'features/loja/presentation/premios_screen.dart';
@@ -104,6 +107,7 @@ class _PainelItem {
 /// do Astronauta") — ver descrição do domínio em PLANO_MIGRACAO.md §5.5 /
 /// README.md.
 const _painelResponsavelItens = [
+  _PainelItem('Início', Icons.home_rounded, HomeResponsavelScreen()),
   _PainelItem('Missões', Icons.rocket_launch, MissoesScreen()),
   _PainelItem('Status das Missões', Icons.fact_check, ComprovacoesScreen()),
   _PainelItem('Suprimentos', Icons.inventory_2, PremiosScreen()),
@@ -115,6 +119,7 @@ const _painelResponsavelItens = [
 /// Missões em aberto (com envio de comprovação), loja pra resgatar
 /// suprimentos e histórico dos próprios pedidos.
 const _painelAstronautaItens = [
+  _PainelItem('Início', Icons.home_rounded, HomeAstronautaScreen()),
   _PainelItem('Missões', Icons.rocket_launch, MissoesAstronautaScreen()),
   _PainelItem('Suprimentos', Icons.storefront, LojaAstronautaScreen()),
   _PainelItem('Status dos Suprimentos', Icons.shopping_bag, MeusPedidosScreen()),
@@ -154,7 +159,7 @@ class _DrawerShellState extends ConsumerState<_DrawerShell> {
                       alignment: Alignment.bottomLeft,
                       child: Text(
                         widget.headerTitulo,
-                        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        style: AppTypography.displayHeader.copyWith(fontSize: 20),
                       ),
                     ),
                   ),
