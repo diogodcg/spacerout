@@ -386,6 +386,18 @@ linkado — `supabase db push` aplica migrations pendentes direto.
         5 itens ativos no schema), falta desenhar a oferta paga
   - [ ] Os itens abaixo (revisar dados de teste, ícone de notificação,
         revisão jurídica) antes de submeter de verdade
+- [ ] **`contato@spacerout.com.br` não recebe e-mail nenhum hoje**: só existe
+      MX em `send.spacerout.com.br` (pro Resend/SES processar bounce de
+      envio), a raiz do domínio não tem MX — quem mandar e-mail pra
+      `contato@` recebe bounce de volta. Esse endereço já é citado como
+      canal de contato/DPO no site (`docs/`) e no FAQ. Caminho discutido
+      (2026-07-23): **Cloudflare Email Routing** (grátis, encaminha pro
+      Gmail) — exige trocar os nameservers do domínio no Registro.br pra
+      o Cloudflare (ele passa a administrar todo o DNS, não só um
+      registro) e recriar lá os registros que já existem (Resend:
+      DKIM/SPF/DMARC/MX; GitHub Pages: 4 A + CNAME `www`). Alternativa
+      mais simples: Google Workspace (pago) ou trocar o e-mail do site
+      pro Gmail pessoal enquanto isso não for feito.
 - [ ] **Revisão jurídica da política de privacidade**: o texto em
       `docs/privacidade.html` foi escrito com cuidado (cobre LGPD art.
       7º/14/18/41), mas não é validação jurídica formal. Recomendado
