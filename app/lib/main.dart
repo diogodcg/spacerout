@@ -50,6 +50,7 @@ class SpaceRoutApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'SpaceRout',
+      debugShowCheckedModeBanner: false,
       theme: AppTheme.spaceRoutTheme,
       home: const _AuthGate(),
     );

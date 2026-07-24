@@ -384,6 +384,17 @@ linkado — `supabase db push` aplica migrations pendentes direto.
   no navegador externo. Presente nos dois Drawers (responsável e
   astronauta), já que ambos usam o mesmo `_DrawerShell`. Testado no
   simulador iOS pelo usuário.
+- **Revisão do Drawer sugerida pelo "PO Gemini"** (2026-07-23): usuário
+  mostrou a tela do menu pro parceiro de produto, que trouxe 3 pontos.
+  2 já estavam cobertos e não precisaram de mudança (conferido no
+  código antes de mexer, não só aceito de olho): o `DrawerHeader` do
+  próprio Flutter já soma `MediaQuery.paddingOf(context).top` no
+  padding — não colide com a Dynamic Island — e o `listTileTheme` em
+  `app_theme.dart` já pinta ícone+texto do item ativo de
+  `stardustYellow` (dava pra ver isso na própria screenshot). O
+  terceiro procedia: faltava `debugShowCheckedModeBanner: false` no
+  `MaterialApp` — a faixa vermelha "DEBUG" aparecia em todo screenshot
+  do simulador. Adicionado e confirmado visualmente.
 
 ### 🚧 Em aberto
 
