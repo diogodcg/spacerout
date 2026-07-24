@@ -356,26 +356,36 @@ linkado — `supabase db push` aplica migrations pendentes direto.
   adicionado (confirmado vendo o mesmo efeito depois no ícone do Play
   Store) — não era um problema real do nosso ícone.
 
-- **Site institucional** (`docs/`, 2026-07-23): 3 páginas estáticas (Sobre,
-  Perguntas frequentes, Privacidade e Termos) no mesmo Design System
-  "Starlight" (paleta/tipografia do app), publicadas via GitHub Pages
-  no domínio próprio `spacerout.com.br`. Resolve a exigência de link de
-  política de privacidade da Play Store. A política cobre LGPD com
-  cuidado extra pela parte de crianças: base legal por tratamento (art.
-  7º), consentimento específico do responsável pra dados de criança
-  (art. 14), encarregado/DPO nomeado (art. 41), lista completa de
-  direitos do titular + revogação de consentimento + canal da ANPD
-  (art. 18). **Não é validação jurídica** — recomendado revisar com
-  advogado antes de publicar de verdade, principalmente a parte de
-  crianças (ver "Em aberto"). Falta: habilitar o GitHub Pages no repo
-  e cadastrar os registros DNS no Registro.br apontando pro domínio.
+- **Site institucional publicado** (`docs/`, 2026-07-23): 3 páginas
+  estáticas (Sobre, Perguntas frequentes, Privacidade e Termos) no
+  mesmo Design System "Starlight" (paleta/tipografia do app), no ar via
+  GitHub Pages no domínio próprio `spacerout.com.br` — GitHub Pages
+  habilitado (`main` / `docs`), DNS cadastrado no Registro.br (4
+  registros A na raiz + CNAME `www`), propagou rápido (bem mais rápido
+  que os do Resend) e o site já responde 200 em `http://spacerout.com.br`.
+  HTTPS ainda provisionando (automático pelo GitHub, sem ação
+  necessária). Resolve a exigência de link de política de privacidade
+  da Play Store. A política cobre LGPD com cuidado extra pela parte de
+  crianças: base legal por tratamento (art. 7º), consentimento
+  específico do responsável pra dados de criança (art. 14),
+  encarregado/DPO nomeado (art. 41), lista completa de direitos do
+  titular + revogação de consentimento + canal da ANPD (art. 18).
+  **Não é validação jurídica** — recomendado revisar com advogado antes
+  de publicar de verdade, principalmente a parte de crianças (ver
+  "Em aberto").
 
 ### 🚧 Em aberto
 
-- [ ] **Publicar o site institucional**: habilitar GitHub Pages (Settings →
-      Pages → Source: `main` / `docs`) e cadastrar no Registro.br os
-      registros A (apex) + CNAME (`www`) que o GitHub Pages exige, pro
-      domínio `spacerout.com.br` apontar pro site em `docs/`.
+- [ ] **Lançar no Google Play essa semana** (meta confirmada em
+      2026-07-23): Android primeiro por custo (taxa única de USD 25 vs.
+      USD 99/ano da Apple). Falta:
+  - [ ] Conta de desenvolvedor Google Play (USD 25, taxa única)
+  - [ ] Ficha da loja (descrição, ícones, screenshots do app)
+  - [ ] Build de release assinado (`flutter build appbundle`, keystore)
+  - [ ] Estratégia freemium "bem aderente" — base já existe (trigger de
+        5 itens ativos no schema), falta desenhar a oferta paga
+  - [ ] Os itens abaixo (revisar dados de teste, ícone de notificação,
+        revisão jurídica) antes de submeter de verdade
 - [ ] **Revisão jurídica da política de privacidade**: o texto em
       `docs/privacidade.html` foi escrito com cuidado (cobre LGPD art.
       7º/14/18/41), mas não é validação jurídica formal. Recomendado
