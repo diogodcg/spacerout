@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'core/supabase_config.dart';
 import 'core/ui/theme/app_theme.dart';
@@ -177,6 +178,17 @@ class _DrawerShellState extends ConsumerState<_DrawerShell> {
               ),
             ),
             const Divider(height: 1),
+            ListTile(
+              leading: const Icon(Icons.info_outline),
+              title: const Text('Sobre o SpaceRout'),
+              onTap: () {
+                Navigator.of(context).pop();
+                launchUrl(
+                  Uri.parse('https://spacerout.com.br'),
+                  mode: LaunchMode.externalApplication,
+                );
+              },
+            ),
             ListTile(
               leading: const Icon(Icons.logout),
               title: const Text('Sair'),

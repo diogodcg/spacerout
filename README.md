@@ -373,6 +373,17 @@ linkado — `supabase db push` aplica migrations pendentes direto.
   **Não é validação jurídica** — recomendado revisar com advogado antes
   de publicar de verdade, principalmente a parte de crianças (ver
   "Em aberto").
+- **Link "Sobre o SpaceRout" no Drawer** (2026-07-23): usuário notou que o
+  menu-sanduíche não linkava pro site institucional recém-publicado.
+  Adicionado `url_launcher` (novo plugin nativo — precisou reiniciar o
+  `flutter run`, hot reload não basta) e um `ListTile` novo em
+  `main.dart`, depois do divisor e antes do "Sair" (mesmo padrão de
+  ação, não de navegação interna) — decisão deliberada de não misturar
+  com os itens funcionais (Missões, Convites etc.), que são de uso
+  frequente; "Sobre" é consulta rara. Abre `https://spacerout.com.br`
+  no navegador externo. Presente nos dois Drawers (responsável e
+  astronauta), já que ambos usam o mesmo `_DrawerShell`. Testado no
+  simulador iOS pelo usuário.
 
 ### 🚧 Em aberto
 
