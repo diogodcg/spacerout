@@ -52,4 +52,12 @@ class OrganizacaoRepository {
     final rows = await _supabase.from('usuarios').select('id');
     return rows.length;
   }
+
+  /// Quantos responsáveis a família tem (RLS restringe à própria
+  /// organização). Decide o texto da confirmação de exclusão de conta:
+  /// com um só, a exclusão leva a família inteira.
+  Future<int> contarResponsaveis() async {
+    final rows = await _supabase.from('usuarios').select('id').eq('role', 'responsavel');
+    return rows.length;
+  }
 }

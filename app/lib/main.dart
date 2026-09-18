@@ -9,6 +9,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'core/supabase_config.dart';
 import 'core/ui/theme/app_theme.dart';
+import 'core/ui/tokens/app_colors.dart';
 import 'core/ui/tokens/app_typography.dart';
 import 'features/assinatura/data/assinatura_config.dart';
 import 'features/assinatura/data/assinatura_providers.dart';
@@ -27,6 +28,7 @@ import 'features/missoes/presentation/missoes_astronauta_screen.dart';
 import 'features/missoes/presentation/missoes_screen.dart';
 import 'features/notificacoes/data/notificacoes_providers.dart';
 import 'features/organizacao/data/organizacao_providers.dart';
+import 'features/organizacao/presentation/excluir_conta_dialog.dart';
 import 'features/organizacao/presentation/onboarding_screen.dart';
 import 'features/relatorio/presentation/relatorio_screen.dart';
 
@@ -95,6 +97,7 @@ class _AuthGate extends ConsumerWidget {
             ? const _DrawerShell(
                 headerTitulo: 'Comando da Missão',
                 itens: _painelResponsavelItens,
+                podeExcluirConta: true,
               )
             : const _DrawerShell(
                 headerTitulo: 'Painel de Voo',
@@ -143,10 +146,18 @@ const _painelAstronautaItens = [
 /// TabBar — mais legível com rótulos longos e evita o problema de abas
 /// cortadas fora da tela.
 class _DrawerShell extends ConsumerStatefulWidget {
-  const _DrawerShell({required this.headerTitulo, required this.itens});
+  const _DrawerShell({
+    required this.headerTitulo,
+    required this.itens,
+    this.podeExcluirConta = false,
+  });
 
   final String headerTitulo;
   final List<_PainelItem> itens;
+
+  /// Só o responsável: a exclusão de conta do astronauta (menor) é pedida
+  /// por ele, ver docs/exclusao-de-conta.html.
+  final bool podeExcluirConta;
 
   @override
   ConsumerState<_DrawerShell> createState() => _DrawerShellState();
@@ -207,6 +218,15 @@ class _DrawerShellState extends ConsumerState<_DrawerShell> {
               title: const Text('Sair'),
               onTap: () => ref.read(authRepositoryProvider).signOut(),
             ),
+            if (widget.podeExcluirConta)
+              ListTile(
+                leading: const Icon(Icons.delete_forever_outlined, color: AppColors.superNovaRed),
+                title: const Text('Excluir conta', style: TextStyle(color: AppColors.superNovaRed)),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  mostrarExcluirContaDialog(context, ref);
+                },
+              ),
             const SizedBox(height: 8),
           ],
         ),

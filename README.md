@@ -598,10 +598,21 @@ linkado — `supabase db push` aplica migrations pendentes direto.
         criada em 2026-09-18 (exigência do Google Play pra apps com
         criação de conta; a URL vai no formulário "Segurança dos dados").
         Só publica quando for pushada (GitHub Pages,
-        `spacerout.com.br/exclusao-de-conta.html`). **Não existe botão de
-        excluir conta dentro do app** — o Google também pede esse caminho;
-        hoje a exclusão é manual, por e-mail, e o processo é operado pelo
-        banco (`delete` em `organizacoes_familiares`/`auth.users`)
+        `spacerout.com.br/exclusao-de-conta.html`).
+  - [x] **Botão "Excluir conta" no app** (2026-09-18, só no menu do
+        responsável; astronauta pede pelo responsável). Digita `EXCLUIR`
+        pra confirmar. Responsável **único** apaga a família inteira
+        (astronautas, missões, fotos, logins); havendo **2º responsável**,
+        só a conta dele sai e o que criou (missões, suprimentos, convites)
+        passa pro responsável mais antigo — `validado_por`/`entregue_por`
+        viram NULL em vez de reatribuídos. Peças: migration
+        `20260918000000` (função `excluir_conta_responsavel`, só
+        `service_role`), Edge Function `excluir-conta` (valida o JWT, chama
+        a RPC, limpa o bucket `comprovacoes` e apaga os logins em
+        `auth.users`), `mostrarExcluirContaDialog` no app. **Testado:** a
+        lógica do banco (astronauta bloqueado, individual, família) numa
+        transação com rollback. **Falta testar** a function ponta a ponta
+        (JWT + Storage + login) — precisa de um login real no emulador
   - [ ] Ficha da loja (descrição, ícones, screenshots do app)
   - [x] ~~Build de release assinado (`flutter build appbundle`, keystore)~~
         — feito em 2026-09-18: keystore de upload em

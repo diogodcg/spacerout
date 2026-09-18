@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.reiniciar_missoes_recorrentes]
 verify_jwt = false
+
+[functions.excluir-conta]
+verify_jwt = false

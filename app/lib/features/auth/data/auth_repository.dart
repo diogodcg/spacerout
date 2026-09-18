@@ -87,4 +87,24 @@ class AuthRepository {
   }
 
   Future<void> signOut() => _supabase.auth.signOut();
+
+  /// Apaga a conta (e, se for o único responsável, a família inteira) pela
+  /// Edge Function `excluir-conta` — só ela tem a service role pra remover
+  /// fotos do Storage e o login em `auth.users`. Depois encerra só a sessão
+  /// local: o token já não vale no servidor, então `signOut()` global
+  /// tentaria revogar um usuário que não existe mais.
+  ///
+  /// `exclusao_parcial` (dados apagados, mas sobrou foto/login órfão) conta
+  /// como sucesso pra quem usa o app — os dados pessoais já sumiram, e o
+  /// resto é limpeza do nosso lado (a function registra no log).
+  Future<void> excluirConta() async {
+    try {
+      await _supabase.functions.invoke('excluir-conta');
+    } on FunctionException catch (e) {
+      final detalhes = e.details;
+      final parcial = detalhes is Map && detalhes['erro'] == 'exclusao_parcial';
+      if (!parcial) rethrow;
+    }
+    await _supabase.auth.signOut(scope: SignOutScope.local);
+  }
 }
