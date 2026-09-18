@@ -611,8 +611,21 @@ linkado — `supabase db push` aplica migrations pendentes direto.
         a RPC, limpa o bucket `comprovacoes` e apaga os logins em
         `auth.users`), `mostrarExcluirContaDialog` no app. **Testado:** a
         lógica do banco (astronauta bloqueado, individual, família) numa
-        transação com rollback. **Falta testar** a function ponta a ponta
-        (JWT + Storage + login) — precisa de um login real no emulador
+        transação com rollback e, em 2026-09-18, a function **ponta a ponta
+        no emulador** (responsável único apagando a família de demo):
+        organização/usuários/missões/suprimentos/resgates zerados, foto
+        removida do Storage e login real (Google) apagado de `auth.users`.
+        **Achados:** (1) os 2 logins mock (`astronauta.mock1/2`, criados por
+        `insert` direto só com `id`) **não** foram apagados — a Admin API
+        provavelmente não os acha; usuário real não é afetado; (2) o
+        diálogo ficava preso no spinner depois do sucesso (vive na rota
+        raiz) — corrigido com `pop()` explícito, **correção ainda não
+        retestada**; (3) o Storage tem 2 fotos órfãs de testes antigos
+        (organizações apagadas por SQL em julho) — apagar pelo Dashboard,
+        `DELETE` em `storage.objects` não remove o arquivo (a CLI
+        `supabase storage rm` também não removeu). **Limpeza de
+        2026-09-18:** logins mock apagados por SQL; banco zerado — só resta
+        o login pessoal em `auth.users` e as 2 fotos órfãs acima
   - [ ] Ficha da loja (descrição, ícones, screenshots do app)
   - [x] ~~Build de release assinado (`flutter build appbundle`, keystore)~~
         — feito em 2026-09-18: keystore de upload em
@@ -624,6 +637,16 @@ linkado — `supabase db push` aplica migrations pendentes direto.
         "Diogo Campos Solucoes Digitais"). O aviso "failed to strip debug
         symbols" do Flutter não impediu o `.aab`; é só símbolos nativos
         não removidos
+  - [x] ~~**BLOQUEIO: chave de teste do RevenueCat derruba o app em
+        release**~~ — resolvido em 2026-09-18. Um APK de release com a chave
+        `test_…` mostrava "Wrong API Key" e fechava o app (o SDK só aceita
+        chave de teste em debug); `AssinaturaConfig.revenueCatApiKey` agora
+        é a Public API Key `goog_…` do app "SpaceRout (Play Store)".
+        Testado: APK de release abre no emulador até a tela de login, e o
+        SDK só loga que não há produtos cadastrados (esperado até criar as
+        assinaturas no Play). `app-release.aab` **`0.1.0+3`** gerado e
+        assinado com a chave de upload. Screenshots da ficha em
+        `loja/screenshots/` (7 telas, 1080×1920)
   - [ ] Estratégia freemium — modelo, schema, webhook e SDK no app
         prontos e testados em sandbox (ver "Feito" acima). Falta, tudo
         bloqueado até a conta de desenvolvedor Google Play virar PJ (ver

@@ -63,8 +63,10 @@ class _ExcluirContaDialogState extends ConsumerState<_ExcluirContaDialog> {
     });
     try {
       await ref.read(authRepositoryProvider).excluirConta();
-      // Sessão encerrada: o _AuthGate troca a tela pro login e este
-      // diálogo sai junto da árvore, sem precisar de pop aqui.
+      // Sessão encerrada: o _AuthGate já troca a tela pro login, mas o
+      // diálogo mora na rota raiz e sobreviveria por cima dele (preso no
+      // spinner, com barrierDismissible: false) — por isso o pop explícito.
+      if (mounted) Navigator.of(context).pop();
     } catch (_) {
       if (!mounted) return;
       setState(() {

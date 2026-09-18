@@ -1,18 +1,16 @@
 /// Chaves e IDs de produto do RevenueCat — públicos por natureza (igual a
 /// `SupabaseConfig.publishableKey`), seguros para embutir no cliente.
 ///
-/// [revenueCatApiKey] hoje é a chave de "Test configuration" (RevenueCat →
-/// Apps → SpaceRout (Play Store) → Test configuration), que simula compras
-/// em sandbox sem depender de loja conectada — usada enquanto a conta de
-/// desenvolvedor Google Play (PJ) não é resolvida (ver README.md "Em
-/// aberto"). Trocar pela Public API Key do app assim que o Play Console
-/// estiver conectado.
+/// [revenueCatApiKey] é a Public API Key do app "SpaceRout (Play Store)" no
+/// RevenueCat (Apps → SpaceRout (Play Store) → Public API Key, prefixo
+/// `goog_`). NÃO usar a chave de "Test configuration" (`test_…`) em build de
+/// release: o SDK mostra "Wrong API Key" e fecha o app de propósito.
 ///
 /// [produtoTier1]/[produtoTier2] precisam bater exatamente com os IDs
 /// esperados pelo webhook (`supabase/functions/webhook-revenuecat/index.ts`)
 /// e com os produtos cadastrados no Google Play Console.
 class AssinaturaConfig {
-  static const revenueCatApiKey = 'test_krYNjSldmEELIoMuBRSglaJlkPA';
+  static const revenueCatApiKey = 'goog_ytQMjJZQoyqivpDcnahUphSuPrR';
   static const produtoTier1 = 'spacerout_familia_anual';
   static const produtoTier2 = 'spacerout_familia_grande_anual';
 

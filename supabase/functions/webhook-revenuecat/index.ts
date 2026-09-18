@@ -63,7 +63,11 @@ Deno.serve(async (req) => {
 
   if (EVENTOS_ATIVA.has(evento.type)) {
     const productId = (evento.new_product_id ?? evento.product_id) as string | undefined;
-    const maxUsuarios = productId ? PLANO_MAX_USUARIOS[productId] : undefined;
+    // No Google Play o RevenueCat manda "subscriptionId:basePlanId" (ex.:
+    // "spacerout_familia_anual:anual"); os IDs cadastrados aqui são só a
+    // parte antes dos dois-pontos. Mesmo tratamento que o app faz em
+    // assinatura_screen.dart.
+    const maxUsuarios = productId ? PLANO_MAX_USUARIOS[productId.split(":")[0]] : undefined;
 
     if (!maxUsuarios) {
       console.error("product_id desconhecido no evento RevenueCat", { productId, evento });
