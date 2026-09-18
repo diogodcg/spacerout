@@ -594,6 +594,14 @@ linkado — `supabase db push` aplica migrations pendentes direto.
         exata) e o perfil de desenvolvedor Google Play PJ já foi criado
   - [x] ~~Conta PJ no Play Console~~ — taxa paga e dados verificados
         (usuário confirmou em 2026-09-18), já habilitado a publicar apps
+  - [x] ~~Página de exclusão de conta~~ — `docs/exclusao-de-conta.html`
+        criada em 2026-09-18 (exigência do Google Play pra apps com
+        criação de conta; a URL vai no formulário "Segurança dos dados").
+        Só publica quando for pushada (GitHub Pages,
+        `spacerout.com.br/exclusao-de-conta.html`). **Não existe botão de
+        excluir conta dentro do app** — o Google também pede esse caminho;
+        hoje a exclusão é manual, por e-mail, e o processo é operado pelo
+        banco (`delete` em `organizacoes_familiares`/`auth.users`)
   - [ ] Ficha da loja (descrição, ícones, screenshots do app)
   - [x] ~~Build de release assinado (`flutter build appbundle`, keystore)~~
         — feito em 2026-09-18: keystore de upload em
