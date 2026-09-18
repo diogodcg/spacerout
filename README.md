@@ -590,10 +590,21 @@ linkado — `supabase db push` aplica migrations pendentes direto.
   - [x] ~~Conta de desenvolvedor Google Play pessoa física~~ — taxa paga
         em 2026-07-24, **estornada em 2026-07-30** (trocou de rota, ver
         item abaixo)
-  - [ ] Pagar taxa de desenvolvedor Google Play como **PJ**, assim que o
-        D-U-N-S sair
+  - [x] ~~D-U-N-S~~ — saiu (usuário informou em 2026-09-18, sem data
+        exata) e o perfil de desenvolvedor Google Play PJ já foi criado
+  - [x] ~~Conta PJ no Play Console~~ — taxa paga e dados verificados
+        (usuário confirmou em 2026-09-18), já habilitado a publicar apps
   - [ ] Ficha da loja (descrição, ícones, screenshots do app)
-  - [ ] Build de release assinado (`flutter build appbundle`, keystore)
+  - [x] ~~Build de release assinado (`flutter build appbundle`, keystore)~~
+        — feito em 2026-09-18: keystore de upload em
+        `~/spacerout-secrets/upload-keystore.jks` (fora do repo; **fazer
+        backup**, perder a chave de upload exige reset via suporte do
+        Google), `android/key.properties` gitignored, `build.gradle.kts`
+        assina com ela quando existe. `app-release.aab` (57 MB, versão
+        `0.1.0+1`) gerado e verificado com `jarsigner` (assinado por
+        "Diogo Campos Solucoes Digitais"). O aviso "failed to strip debug
+        symbols" do Flutter não impediu o `.aab`; é só símbolos nativos
+        não removidos
   - [ ] Estratégia freemium — modelo, schema, webhook e SDK no app
         prontos e testados em sandbox (ver "Feito" acima). Falta, tudo
         bloqueado até a conta de desenvolvedor Google Play virar PJ (ver
@@ -614,9 +625,10 @@ linkado — `supabase db push` aplica migrations pendentes direto.
       isenta das duas, mas exige **D-U-N-S number**. CNPJ já aberto
       (**Diogo Campos Soluções Digitais**, 68.206.836/0001-80,
       Brasília-DF), **D-U-N-S solicitado em 2026-07-28** pelo sistema
-      gratuito (prazo de até 30 dias, expectativa ~2026-08-27) — esse é
-      hoje o **caminho crítico do lançamento**. Taxa de PF já estornada;
-      assim que o D-U-N-S sair, paga a taxa de novo como PJ.
+      gratuito. **Atualização 2026-09-18**: D-U-N-S já saiu e o perfil de
+      desenvolvedor PJ já foi criado — o bloqueio principal do lançamento
+      acabou; falta confirmar taxa/verificação (ver item acima). Taxa de
+      PF já estornada.
 - [x] ~~Preencher identificação legal em `docs/privacidade.html`~~ — feito
       em 2026-07-27: o texto revisado juridicamente que o usuário trouxe
       substituiu o rascunho anterior (cobre LGPD art. 7º/14/18/41, Marco
