@@ -646,7 +646,19 @@ linkado — `supabase db push` aplica migrations pendentes direto.
         funcionou no emulador mesmo assim (só escopos básicos), mas o padrão
         pra produção é **Publicar app** (exige concluir o Branding; sem
         escopos sensíveis não pede verificação). Decisão pendente
-  - [ ] Ficha da loja (descrição, ícones, screenshots do app)
+  - [x] ~~Ficha da loja (descrição, ícones, screenshots do app)~~ —
+        preenchida no Play Console e conferida em 2026-09-18 (nome
+        "SpaceRout", descrição curta 80/80, completa 1933/4000, ícone
+        512, imagem de destaque, 7 capturas 1080×1920). Havia 1.633
+        caracteres de notas internas coladas por engano no fim da
+        descrição completa; removidos e salvos (a alteração fica pronta na
+        "Visão geral da publicação", **não enviada à revisão**). Preço do
+        app definido como **Gratuito** (com assinatura dentro do app; o
+        Google não permite mudar pra pago depois de publicado). Painel de
+        tarefas do Play: todas as declarações concluídas (privacidade,
+        login, anúncios, classificação, público-alvo, segurança dos dados,
+        governamentais, financeiros, saúde, categoria/contato, conta de
+        comerciante)
   - [x] ~~Build de release assinado (`flutter build appbundle`, keystore)~~
         — feito em 2026-09-18: keystore de upload em
         `~/spacerout-secrets/upload-keystore.jks` (fora do repo; **fazer
@@ -681,8 +693,27 @@ linkado — `supabase db push` aplica migrations pendentes direto.
         o webhook e a tela de assinatura já tratam o prefixo antes dos
         dois-pontos. Atenção: o Play arredondou 89,90 para 89,99 na
         primeira tentativa de "Set prices"; o valor exato só entrou pela
-        edição direto na linha do país. **Falta:** service account no
-        RevenueCat, cadastrar os produtos/Offering lá e testar compra
+        edição direto na linha do país.
+        **RevenueCat (2026-09-18, projeto `13d27567`):** criados os produtos
+        Play Store `spacerout_familia_anual:anual` e
+        `spacerout_familia_grande_anual:anual` (ambos com "Backwards
+        compatible"); anexados ao Entitlement existente `SpaceRout
+        Unlimited`; Offering `default` (já era a atual) agora tem o pacote
+        `$rc_annual` = Tier 1 (+ o produto da Test Store) e o pacote custom
+        `familia_grande_anual` = Tier 2. A ordem na Offering ficou Tier 2
+        antes do Tier 1 (só estético — o app filtra por tamanho da família e
+        recomenda o menor plano que cobre). **Falta, e só o dono pode
+        fazer** (são credenciais): (1) enviar o **Service Account
+        Credentials JSON** no app "SpaceRout (Play Store)" (campo hoje
+        vazio; "Store Status: Could not check" nos produtos até lá) — criar
+        a service account no Google Cloud, ativar a Google Play Android
+        Developer API e convidá-la no Play Console com permissão de ver dados
+        financeiros e gerenciar pedidos/assinaturas; (2) ligar o **Google
+        developer notifications** no mesmo app; (3) cadastrar o **webhook**
+        (Integrations → Webhooks está com "Active: 0"): URL
+        `https://kzizdekhohisnixyzlqj.supabase.co/functions/v1/webhook-revenuecat`,
+        header Authorization = valor de `REVENUECAT_WEBHOOK_SECRET`; (4)
+        compra de teste com conta de testador de licença
   - [ ] Estratégia freemium — modelo, schema, webhook e SDK no app
         prontos e testados em sandbox (ver "Feito" acima). Falta, tudo
         bloqueado até a conta de desenvolvedor Google Play virar PJ (ver
