@@ -667,6 +667,22 @@ linkado — `supabase db push` aplica migrations pendentes direto.
         assinaturas no Play). `app-release.aab` **`0.1.0+3`** gerado e
         assinado com a chave de upload. Screenshots da ficha em
         `loja/screenshots/` (7 telas, 1080×1920)
+  - [x] **Assinaturas criadas no Play Console** (2026-09-18, conta de
+        comerciante do Google Payments já configurada). Ambas com plano
+        básico `anual` **Ativo**, "A cada ano, renovação automática",
+        carência de 14 dias, disponível **só no Brasil** (os demais países
+        ficaram sem preço/disponibilidade de propósito):
+        `spacerout_familia_anual` — "SpaceRout Família anual (até 4
+        usuários)", **BRL 89,90**; `spacerout_familia_grande_anual` —
+        "SpaceRout Família Grande anual (até 7 usuários)", **BRL 149,90**.
+        Benefícios: "Missões e prêmios ilimitados" + "Até N usuários na
+        família". No Google Play o `product_id` que o RevenueCat manda é
+        `subscriptionId:basePlanId` (ex.: `spacerout_familia_anual:anual`);
+        o webhook e a tela de assinatura já tratam o prefixo antes dos
+        dois-pontos. Atenção: o Play arredondou 89,90 para 89,99 na
+        primeira tentativa de "Set prices"; o valor exato só entrou pela
+        edição direto na linha do país. **Falta:** service account no
+        RevenueCat, cadastrar os produtos/Offering lá e testar compra
   - [ ] Estratégia freemium — modelo, schema, webhook e SDK no app
         prontos e testados em sandbox (ver "Feito" acima). Falta, tudo
         bloqueado até a conta de desenvolvedor Google Play virar PJ (ver
