@@ -702,18 +702,30 @@ linkado — `supabase db push` aplica migrations pendentes direto.
         `$rc_annual` = Tier 1 (+ o produto da Test Store) e o pacote custom
         `familia_grande_anual` = Tier 2. A ordem na Offering ficou Tier 2
         antes do Tier 1 (só estético — o app filtra por tamanho da família e
-        recomenda o menor plano que cobre). **Falta, e só o dono pode
-        fazer** (são credenciais): (1) enviar o **Service Account
-        Credentials JSON** no app "SpaceRout (Play Store)" (campo hoje
-        vazio; "Store Status: Could not check" nos produtos até lá) — criar
-        a service account no Google Cloud, ativar a Google Play Android
-        Developer API e convidá-la no Play Console com permissão de ver dados
-        financeiros e gerenciar pedidos/assinaturas; (2) ligar o **Google
-        developer notifications** no mesmo app; (3) cadastrar o **webhook**
-        (Integrations → Webhooks está com "Active: 0"): URL
-        `https://kzizdekhohisnixyzlqj.supabase.co/functions/v1/webhook-revenuecat`,
-        header Authorization = valor de `REVENUECAT_WEBHOOK_SECRET`; (4)
-        compra de teste com conta de testador de licença
+        recomenda o menor plano que cobre). **Ligação Play ↔ RevenueCat
+        (2026-09-18, noite):** a **Google Play Android Developer API foi
+        ativada** no projeto GCP `spacerout` e foi criada a service account
+        `revenuecat-play@spacerout.iam.gserviceaccount.com`. O JSON dela
+        está em `~/spacerout-secrets/` (fora do repo) e já foi enviado ao app
+        "SpaceRout (Play Store)" no RevenueCat. Ela foi convidada no Play
+        Console (conta DCG Soluções Digitais; permissões de conta: ver
+        informações/relatórios, ver dados financeiros, gerenciar pedidos e
+        assinaturas). Validação no RevenueCat: catálogo de produtos e de
+        assinaturas **OK**; **"validar compras de assinatura" ainda
+        falha** — é a propagação das permissões financeiras do Google
+        (pode levar horas). **Webhook cadastrado** no RevenueCat
+        ("SpaceRout Supabase", URL
+        `https://kzizdekhohisnixyzlqj.supabase.co/functions/v1/webhook-revenuecat`).
+        O valor antigo de `REVENUECAT_WEBHOOK_SECRET` não era recuperável (o
+        Supabase só mostra hash), então gerei um novo, guardado em
+        `~/spacerout-secrets/revenuecat-webhook-secret.txt` e gravado no
+        Supabase; a função responde 401 sem o header e passa da autenticação
+        com ele (não confirmado ainda com um "Send test event" do
+        RevenueCat). **Falta:** (1) tentar **"Check again"** nas credenciais
+        (Apps → SpaceRout (Play Store)) até passar o 3º check; (2) ligar o
+        **Google developer notifications** no mesmo app (só libera com
+        credenciais válidas); (3) "Send test event" no webhook pra
+        confirmar 200; (4) compra de teste com conta de testador de licença
   - [ ] Estratégia freemium — modelo, schema, webhook e SDK no app
         prontos e testados em sandbox (ver "Feito" acima). Falta, tudo
         bloqueado até a conta de desenvolvedor Google Play virar PJ (ver
