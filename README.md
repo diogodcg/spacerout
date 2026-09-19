@@ -626,6 +626,26 @@ linkado — `supabase db push` aplica migrations pendentes direto.
         `supabase storage rm` também não removeu). **Limpeza de
         2026-09-18:** logins mock apagados por SQL; banco zerado — só resta
         o login pessoal em `auth.users` e as 2 fotos órfãs acima
+  - [x] **Clients OAuth Android no Google Cloud (projeto `spacerout`,
+        nº `740026619707`)** — criados em 2026-09-18 pelo Google Auth
+        Platform → Clientes, todos com `com.spacerout.spacerout`:
+        `SpaceRout Android (Play App Signing)` = SHA-1
+        `89:A2:C5:2E:48:36:48:E9:8A:08:1D:21:D3:75:B1:96:D5:B9:6B:D4`
+        (`deployment_cert` do Play; SHA-256 `8F:E0:86:6F:…:0F:E3:2C`, o mesmo
+        do Digital Asset Links — é o que assina o app entregue);
+        `SpaceRout Android (Play hybrid classical)` = `42:68:66:57:…:0D:EC`
+        (chave híbrida pós-quântica, por garantia);
+        `SpaceRout Android (Upload key)` = `52:A0:43:91:…:0F:49` (build local
+        assinado com `key.properties`). Já existia `client_Android_1` (debug).
+        O Google avisa que leva de 5 min a algumas horas pra valer. **Não
+        verificado** com o app instalado pela Play Store (o opt-in do teste
+        interno não carrega na Play Store do emulador). O client Web usado
+        no `serverClientId`/Supabase não mudou
+  - [ ] **Tela de consentimento OAuth está em "Testando"** (Google Auth
+        Platform → Público-alvo, tipo Externo, 0 usuários de teste). O login
+        funcionou no emulador mesmo assim (só escopos básicos), mas o padrão
+        pra produção é **Publicar app** (exige concluir o Branding; sem
+        escopos sensíveis não pede verificação). Decisão pendente
   - [ ] Ficha da loja (descrição, ícones, screenshots do app)
   - [x] ~~Build de release assinado (`flutter build appbundle`, keystore)~~
         — feito em 2026-09-18: keystore de upload em
